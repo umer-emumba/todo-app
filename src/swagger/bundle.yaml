@@ -1,0 +1,106 @@
+swagger: '2.0'
+info:
+  version: 1.0.0
+  title: TODO App
+host: localhost:3000
+basePath: /api
+schemes:
+  - http
+  - https
+tags:
+  - name: auth
+    description: authentication apis
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+definitions:
+  Auth:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+      password:
+        type: string
+        minLength: 8
+    required:
+      - email
+      - password
+paths:
+  /auth/signup:
+    post:
+      summary: user register
+      tags:
+        - auth
+      parameters:
+        - in: body
+          name: user
+          description: The user to create.
+          schema:
+            $ref: '#/definitions/Auth'
+      responses:
+        '201':
+          description: Register success
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+            example:
+              success: false
+              error: error message
+  /auth/verify_account:
+    post:
+      summary: user account verification
+      tags:
+        - auth
+      parameters:
+        - in: body
+          name: token
+          description: The user to create.
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      responses:
+        '200':
+          description: Account verified successfully
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '400':
+          description: Bad request
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              error:
+                type: string
+            example:
+              success: false
+              error: error message

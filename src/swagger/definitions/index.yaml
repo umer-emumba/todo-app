@@ -1,0 +1,2 @@
+Auth:
+  $ref: "./auth.yaml"

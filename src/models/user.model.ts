@@ -8,36 +8,36 @@ import {
   AllowNull,
   HasMany,
 } from "sequelize-typescript";
-import { Task } from "./task.model";
+import Task from "./task.model";
 
 @Table({
   timestamps: true,
   underscored: true,
   tableName: "users",
 })
-export class User extends Model {
-  @Column(DataType.STRING)
+export default class User extends Model {
   @Length({ max: 255 })
   @Unique
+  @Column(DataType.STRING)
   declare email: string;
 
-  @Column(DataType.STRING)
   @Length({ max: 255 })
   @AllowNull
+  @Column(DataType.STRING)
   declare password: string;
 
-  @Column(DataType.ENUM("GOOGLE", "FACEBOOK", "APPLE"))
   @Length({ max: 255 })
   @AllowNull
+  @Column(DataType.ENUM("GOOGLE", "FACEBOOK", "APPLE"))
   declare social_media_token: string;
 
-  @Column(DataType.STRING)
   @Length({ max: 255 })
   @AllowNull
+  @Column(DataType.STRING)
   declare social_media_platform: string;
 
-  @Column(DataType.DATE)
   @AllowNull
+  @Column(DataType.DATE)
   declare email_verified_at: Date;
 
   @HasMany(() => Task)

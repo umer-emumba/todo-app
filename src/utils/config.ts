@@ -9,6 +9,14 @@ const config: IAppConfig = {
     password: process.env.DB_PASSWORD || "",
     database: process.env.DB_DATABASE || "db",
   },
+  mailer: {
+    host: process.env.SMTP_HOST || "",
+    port: process.env.SMTP_PORT ? parseInt(process.env.SMTP_PORT) : 2525,
+    username: process.env.SMTP_USERNAME || "",
+    password: process.env.SMTP_PASSWORD || "",
+    sender: process.env.SMTP_SENDER || "",
+  },
+  frontendUrl: process.env.FRONTEND_URL || "",
   jwtSecret: process.env.JWT_SECRET || "",
 };
 

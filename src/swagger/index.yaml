@@ -1,0 +1,26 @@
+swagger: "2.0"
+info:
+  version: "1.0.0"
+  title: "TODO App"
+
+host: "localhost:3000"
+basePath: /api
+schemes:
+  - http
+  - https
+
+tags:
+  - name: auth
+    description: authentication apis
+
+securityDefinitions:
+  bearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
+
+definitions:
+  $ref: "./definitions/index.yaml"
+
+paths:
+  $ref: "./paths/index.yaml"

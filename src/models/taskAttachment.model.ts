@@ -7,20 +7,20 @@ import {
   ForeignKey,
   BelongsTo,
 } from "sequelize-typescript";
-import { Task } from "./task.model";
+import Task from "./task.model";
 
 @Table({
   timestamps: true,
   underscored: true,
   tableName: "task_attachments",
 })
-export class TaskAttachment extends Model {
-  @Column(DataType.STRING)
+export default class TaskAttachment extends Model {
   @Length({ max: 255 })
+  @Column(DataType.STRING)
   declare attachment_url: string;
 
-  @Column(DataType.ENUM("IMAGE", "VIDEO", "PDF", "DOC"))
   @Length({ max: 255 })
+  @Column(DataType.ENUM("IMAGE", "VIDEO", "PDF", "DOC"))
   declare attachment_type: string;
 
   @ForeignKey(() => Task)

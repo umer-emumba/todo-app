@@ -1,3 +1,3 @@
-export * from "./user.model";
-export * from "./task.model";
-export * from "./taskAttachment.model";
+export { default as User } from "./user.model";
+export { default as Task } from "./task.model";
+export { default as TaskAttachment } from "./taskAttachment.model";

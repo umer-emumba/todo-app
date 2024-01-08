@@ -10,17 +10,17 @@ import {
   BelongsTo,
   HasMany,
 } from "sequelize-typescript";
-import { User } from "./user.model";
-import { TaskAttachment } from "./taskAttachment.model";
+import User from "./user.model";
+import TaskAttachment from "./taskAttachment.model";
 
 @Table({
   timestamps: true,
   underscored: true,
   tableName: "tasks",
 })
-export class Task extends Model {
-  @Column(DataType.STRING)
+export default class Task extends Model {
   @Length({ max: 255 })
+  @Column(DataType.STRING)
   declare title: string;
 
   @Column(DataType.TEXT)
@@ -29,12 +29,12 @@ export class Task extends Model {
   @Column(DataType.DATE)
   declare due_at: Date;
 
-  @Column(DataType.DATE)
   @AllowNull
+  @Column(DataType.DATE)
   declare completed_at: Date;
 
-  @Column(DataType.TINYINT)
   @Default(0)
+  @Column(DataType.TINYINT)
   declare is_completed: number;
 
   @ForeignKey(() => User)
