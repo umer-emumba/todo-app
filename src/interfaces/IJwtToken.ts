@@ -1,7 +1,7 @@
 export enum TokenType {
   EMAIL_VERIFICATION = "email_verification",
   REFRESH = "refresh",
-  AUTH = "auth",
+  ACCESS = "access",
   PASSWORD_RESET = "password_reset",
 }
 

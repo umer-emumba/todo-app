@@ -1,14 +1,24 @@
-import { CreateUserDto, IMailOptions } from "../interfaces";
+import {
+  CreateUserDto,
+  ILoginResponse,
+  IMailOptions,
+  LoginDto,
+} from "../interfaces";
 import { IJwtToken, TokenType, UserType } from "../interfaces/IJwtToken";
 import { userRepository } from "../repositories";
 import {
+  ACCONT_NOT_VERIFIED,
   ACCOUNT_CREATED,
   ACCOUNT_VERIFIED,
   BadRequestError,
-  CREATED_SUCCESSFULLY,
   EMAIL_VERIFICATION_BODY,
   EMAIL_VERIFICATION_TITLE,
+  ForbiddenError,
+  INVALID_CREDENTIALS,
   INVALID_TOKEN,
+  UnauthorizedError,
+  comparePasswords,
+  config,
   generateJWT,
   hashPassword,
   sendMail,
@@ -39,14 +49,81 @@ class AuthService {
   async accountVerification(token: string): Promise<string> {
     const decoded = verifyJWT(token);
     if (
-      decoded.user_type !== UserType.USER &&
+      decoded.user_type !== UserType.USER ||
       decoded.token_type !== TokenType.EMAIL_VERIFICATION
     ) {
-      throw new BadRequestError(INVALID_TOKEN);
+      throw new ForbiddenError(INVALID_TOKEN);
     }
 
     await userRepository.markUserVerified(decoded.id);
     return ACCOUNT_VERIFIED;
+  }
+
+  async signin(dto: LoginDto): Promise<ILoginResponse> {
+    const user = await userRepository.findByEmailUnscoped(dto.email);
+    if (!user) {
+      throw new UnauthorizedError(INVALID_CREDENTIALS);
+    }
+
+    const isValidPassword = await comparePasswords(dto.password, user.password);
+
+    if (!isValidPassword) {
+      throw new UnauthorizedError(INVALID_CREDENTIALS);
+    }
+
+    if (!user.email_verified_at) {
+      throw new BadRequestError(ACCONT_NOT_VERIFIED);
+    }
+
+    const accessTokenPayload: IJwtToken = {
+      id: user.id,
+      user_type: UserType.USER,
+      token_type: TokenType.ACCESS,
+    };
+
+    const refreshTokenPayload: IJwtToken = {
+      id: user.id,
+      user_type: UserType.USER,
+      token_type: TokenType.REFRESH,
+    };
+
+    const response: ILoginResponse = {
+      accessToken: generateJWT(
+        accessTokenPayload,
+        config.jwt.accessTokenExpiry
+      ),
+      refreshToken: generateJWT(
+        refreshTokenPayload,
+        config.jwt.refreshTokenExpiry
+      ),
+    };
+    return response;
+  }
+
+  async generateAccessToken(refreshToken: string): Promise<string> {
+    const decoded = verifyJWT(refreshToken);
+    if (
+      decoded.user_type !== UserType.USER ||
+      decoded.token_type !== TokenType.REFRESH
+    ) {
+      throw new ForbiddenError(INVALID_TOKEN);
+    }
+
+    const user = await userRepository.findById(decoded.id);
+    if (!user) {
+      throw new UnauthorizedError(INVALID_CREDENTIALS);
+    }
+
+    const accessTokenPayload: IJwtToken = {
+      id: decoded.id,
+      user_type: UserType.USER,
+      token_type: TokenType.ACCESS,
+    };
+    const accessToken = generateJWT(
+      accessTokenPayload,
+      config.jwt.accessTokenExpiry
+    );
+    return accessToken;
   }
 }
 

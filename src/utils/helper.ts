@@ -21,12 +21,12 @@ export const generateJWT = (data: any, expiry?: number): string => {
   if (expiry) {
     options.expiresIn = expiry;
   }
-  const token = jwt.sign(JSON.stringify(data), config.jwtSecret, options);
+  const token = jwt.sign(data, config.jwt.secret, options);
   return token;
 };
 
 export const verifyJWT = (token: string): jwt.JwtPayload => {
-  const decoded = jwt.verify(token, config.jwtSecret);
+  const decoded = jwt.verify(token, config.jwt.secret);
   let response: jwt.JwtPayload;
   if (typeof decoded === "string") {
     response = {

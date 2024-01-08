@@ -1,2 +1,10 @@
-Auth:
-  $ref: "./auth.yaml"
+SignUp:
+  $ref: "./signup.yaml"
+SignIn:
+  $ref: "./signin.yaml"
+LoginResponse:
+  $ref: "./login.response.yaml"
+Error:
+  $ref: "./error.yaml"
+AccessTokenResponse:
+  $ref: "./accessToken.response.yaml"

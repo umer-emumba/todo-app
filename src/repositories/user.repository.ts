@@ -32,6 +32,22 @@ class UserRepository {
       }
     );
   }
+
+  async findByEmailUnscoped(email: string): Promise<User | null> {
+    return User.unscoped().findOne({
+      where: {
+        email: email,
+      },
+    });
+  }
+
+  async findById(id: number): Promise<User | null> {
+    return User.findOne({
+      where: {
+        id,
+      },
+    });
+  }
 }
 
 export default new UserRepository();

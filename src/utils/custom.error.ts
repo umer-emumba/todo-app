@@ -14,3 +14,17 @@ export class BadRequestError extends CustomError {
     this.name = "BadRequestError";
   }
 }
+
+export class UnauthorizedError extends CustomError {
+  constructor(message: string) {
+    super(401, message);
+    this.name = "UnauthorizedError";
+  }
+}
+
+export class ForbiddenError extends CustomError {
+  constructor(message: string) {
+    super(403, message);
+    this.name = "ForbiddenError";
+  }
+}

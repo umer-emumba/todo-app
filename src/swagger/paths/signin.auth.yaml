@@ -1,0 +1,27 @@
+post:
+  summary: "user signin"
+  tags:
+    - auth
+  parameters:
+    - in: body
+      name: user
+      description: The user to signin.
+      schema:
+        $ref: "#/definitions/SignIn"
+  responses:
+    200:
+      description: "Login success"
+      schema:
+        $ref: "#/definitions/LoginResponse"
+    400:
+      description: "Bad request"
+      schema:
+        $ref: "#/definitions/Error"
+    401:
+      description: "unauthorized request"
+      schema:
+        $ref: "#/definitions/Error"
+    500:
+      description: "internal server error"
+      schema:
+        $ref: "#/definitions/Error"

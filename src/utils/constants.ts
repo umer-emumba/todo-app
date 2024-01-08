@@ -23,3 +23,5 @@ export const EMAIL_VERIFICATION_BODY = (token: string) => `
 export const ACCOUNT_CREATED: string = `Your account is created successfully, account verification link has been sent to your email address`;
 export const INVALID_TOKEN: string = `Invalid token provided`;
 export const ACCOUNT_VERIFIED: string = `Your account is verified, now you can login with your credentials`;
+export const INVALID_CREDENTIALS = `Invalid Credentials`;
+export const ACCONT_NOT_VERIFIED = `Please verify your account first to use this app`;

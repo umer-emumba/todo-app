@@ -7,7 +7,7 @@ post:
       name: user
       description: The user to create.
       schema:
-        $ref: "#/definitions/Auth"
+        $ref: "#/definitions/SignUp"
   responses:
     201:
       description: "Register success"
@@ -24,12 +24,4 @@ post:
     400:
       description: "Bad request"
       schema:
-        type: object
-        properties:
-          success:
-            type: boolean
-          error:
-            type: string
-        example:
-          success: false
-          error: "error message"
+        $ref: "#/definitions/Error"

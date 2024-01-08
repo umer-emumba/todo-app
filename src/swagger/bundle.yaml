@@ -16,7 +16,7 @@ securityDefinitions:
     name: Authorization
     in: header
 definitions:
-  Auth:
+  SignUp:
     type: object
     properties:
       email:
@@ -28,6 +28,49 @@ definitions:
     required:
       - email
       - password
+  SignIn:
+    type: object
+    properties:
+      email:
+        type: string
+        format: email
+      password:
+        type: string
+    required:
+      - email
+      - password
+  LoginResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+      data:
+        type: object
+        properties:
+          accessToken:
+            type: string
+          refreshToken:
+            type: string
+  Error:
+    type: object
+    properties:
+      success:
+        type: boolean
+      error:
+        type: string
+    example:
+      success: false
+      error: error message
+  AccessTokenResponse:
+    type: object
+    properties:
+      success:
+        type: boolean
+      data:
+        type: object
+        properties:
+          accessToken:
+            type: string
 paths:
   /auth/signup:
     post:
@@ -39,7 +82,7 @@ paths:
           name: user
           description: The user to create.
           schema:
-            $ref: '#/definitions/Auth'
+            $ref: '#/definitions/SignUp'
       responses:
         '201':
           description: Register success
@@ -56,15 +99,7 @@ paths:
         '400':
           description: Bad request
           schema:
-            type: object
-            properties:
-              success:
-                type: boolean
-              error:
-                type: string
-            example:
-              success: false
-              error: error message
+            $ref: '#/definitions/Error'
   /auth/verify_account:
     post:
       summary: user account verification
@@ -73,7 +108,7 @@ paths:
       parameters:
         - in: body
           name: token
-          description: The user to create.
+          description: Account verification token.
           schema:
             type: object
             properties:
@@ -95,12 +130,67 @@ paths:
         '400':
           description: Bad request
           schema:
+            $ref: '#/definitions/Error'
+  /auth/signin:
+    post:
+      summary: user signin
+      tags:
+        - auth
+      parameters:
+        - in: body
+          name: user
+          description: The user to signin.
+          schema:
+            $ref: '#/definitions/SignIn'
+      responses:
+        '200':
+          description: Login success
+          schema:
+            $ref: '#/definitions/LoginResponse'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /auth/generate_access_token:
+    post:
+      summary: generate access token using refresh token
+      tags:
+        - auth
+      parameters:
+        - in: body
+          name: refreshToken
+          description: refresh token
+          schema:
             type: object
             properties:
-              success:
-                type: boolean
-              error:
+              refreshToken:
                 type: string
-            example:
-              success: false
-              error: error message
+      responses:
+        '200':
+          description: Access token generated success
+          schema:
+            $ref: '#/definitions/AccessTokenResponse'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'

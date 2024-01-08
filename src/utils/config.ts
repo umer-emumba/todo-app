@@ -17,7 +17,15 @@ const config: IAppConfig = {
     sender: process.env.SMTP_SENDER || "",
   },
   frontendUrl: process.env.FRONTEND_URL || "",
-  jwtSecret: process.env.JWT_SECRET || "",
+  jwt: {
+    secret: process.env.JWT_SECRET || "",
+    accessTokenExpiry: process.env.JWT_ACCESS_EXPIRY
+      ? parseInt(process.env.JWT_ACCESS_EXPIRY)
+      : 900,
+    refreshTokenExpiry: process.env.JWT_REFRESH_EXPIRY
+      ? parseInt(process.env.JWT_REFRESH_EXPIRY)
+      : 604800,
+  },
 };
 
 export default config;
