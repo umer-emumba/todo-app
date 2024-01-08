@@ -14,10 +14,16 @@ interface IMailConfig {
   sender: string;
 }
 
+interface IJWTConfig {
+  secret: string;
+  accessTokenExpiry: number;
+  refreshTokenExpiry: number;
+}
+
 export interface IAppConfig {
   port: number;
   db: IDatabaseConfig;
   mailer: IMailConfig;
-  jwtSecret: string;
+  jwt: IJWTConfig;
   frontendUrl: string;
 }

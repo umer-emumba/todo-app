@@ -5,7 +5,7 @@ Source code for the example REST API with Express, Typescript, Sequelize and mys
 1. Clone The Repo
    ```sh
    git clone https://github.com/umer-emumba/todo-app.git
-   cd todo-typescript-express
+   cd todo-app
    ```
 2. Install dependencies
 
@@ -18,20 +18,18 @@ Source code for the example REST API with Express, Typescript, Sequelize and mys
    ```sh
    PORT=3000
 
-   NODE_ENV=devepolment
-
-   DB_HOST=localhost
-   DB_USERNAME=mysql
-   DB_PASSWORD=#setup password
-   DB_PORT=5432
-   DB_NAME=todo
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=todo
+   DB_USER=root
+   DB_PASSWORD=
    ```
 
 4. Migration Database with Sequelize
 
-   ```sh
-   npx sequelize-cli db:migrate
-   ```
+```sh
+npx sequelize-cli db:migrate
+```
 
 5. Run dev
 

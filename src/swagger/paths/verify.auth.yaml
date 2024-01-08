@@ -5,7 +5,7 @@ post:
   parameters:
     - in: body
       name: token
-      description: The user to create.
+      description: Account verification token.
       schema:
         type: object
         properties:
@@ -27,12 +27,4 @@ post:
     400:
       description: "Bad request"
       schema:
-        type: object
-        properties:
-          success:
-            type: boolean
-          error:
-            type: string
-        example:
-          success: false
-          error: "error message"
+        $ref: "#/definitions/Error"

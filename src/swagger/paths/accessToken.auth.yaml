@@ -1,0 +1,34 @@
+post:
+  summary: "generate access token using refresh token"
+  tags:
+    - auth
+  parameters:
+    - in: body
+      name: refreshToken
+      description: refresh token
+      schema:
+        type: object
+        properties:
+          refreshToken:
+            type: string
+  responses:
+    200:
+      description: "Access token generated success"
+      schema:
+        $ref: "#/definitions/AccessTokenResponse"
+    400:
+      description: "Bad request"
+      schema:
+        $ref: "#/definitions/Error"
+    401:
+      description: "unauthorized request"
+      schema:
+        $ref: "#/definitions/Error"
+    403:
+      description: "Forbidden request"
+      schema:
+        $ref: "#/definitions/Error"
+    500:
+      description: "internal server error"
+      schema:
+        $ref: "#/definitions/Error"

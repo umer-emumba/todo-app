@@ -7,9 +7,15 @@ import {
   Unique,
   AllowNull,
   HasMany,
+  DefaultScope,
 } from "sequelize-typescript";
 import Task from "./task.model";
 
+@DefaultScope(() => ({
+  attributes: {
+    exclude: ["password"],
+  },
+}))
 @Table({
   timestamps: true,
   underscored: true,

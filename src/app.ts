@@ -53,7 +53,7 @@ class App {
       SwaggerExpressValidator({
         schema: swaggerDocument,
         validateRequest: true,
-        validateResponse: false,
+        validateResponse: true,
         requestValidationFn: handleValidationErrors,
       })
     );

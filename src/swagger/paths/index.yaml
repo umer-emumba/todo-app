@@ -2,3 +2,7 @@
   $ref: "./signup.auth.yaml"
 /auth/verify_account:
   $ref: "./verify.auth.yaml"
+/auth/signin:
+  $ref: "./signin.auth.yaml"
+/auth/generate_access_token:
+  $ref: "./accessToken.auth.yaml"
