@@ -119,7 +119,10 @@ class AuthService {
       user_type: UserType.USER,
       token_type: TokenType.ACCESS,
     };
-    const accessToken = generateJWT(accessTokenPayload);
+    const accessToken = generateJWT(
+      accessTokenPayload,
+      config.jwt.accessTokenExpiry
+    );
     return accessToken;
   }
 }
