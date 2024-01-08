@@ -12,6 +12,8 @@ export const SWAGGER_SPECS_PATH: string = path.join(
 );
 export const CREATED_SUCCESSFULLY = (item: string) =>
   `${item} created successfully`;
+export const UPDATED_SUCCESSFULLY = (item: string) =>
+  `${item} updated successfully`;
 export const ENTITY_SHOULD_BE_UBNIQUE = (item: string) =>
   `${item} should be unique`;
 export const EMAIL_VERIFICATION_TITLE = `Account verification email`;
@@ -25,3 +27,13 @@ export const INVALID_TOKEN: string = `Invalid token provided`;
 export const ACCOUNT_VERIFIED: string = `Your account is verified, now you can login with your credentials`;
 export const INVALID_CREDENTIALS = `Invalid Credentials`;
 export const ACCONT_NOT_VERIFIED = `Please verify your account first to use this app`;
+export const ACCOUNT_NOT_FOUND = `No Account found aginst given info`;
+export const FORGOT_PASSWORD_NOT_ALLOWED_FOR_SOCIAL_LOGIN = `Forgot password is not allowed for social logins`;
+
+export const PASSWORD_FORGOT_EMAIL_TITLE = `Password Reset Request`;
+export const PASSWORD_FORGOT_EMAIL_BODY = (token: string) => `
+<h1>Password Reset Request</h1>
+<p>please click on given link to reset your account password <a href="${config.frontendUrl}/forgot_password?token=${token}">Reset Password</a></p>
+
+`;
+export const PASSWORD_RESET_EMAIL_SENT: string = `Password reset email has been sent to your email`;

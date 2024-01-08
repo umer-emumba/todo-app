@@ -3,19 +3,26 @@ import {
   ILoginResponse,
   IMailOptions,
   LoginDto,
+  PasswordResetDto,
 } from "../interfaces";
 import { IJwtToken, TokenType, UserType } from "../interfaces/IJwtToken";
 import { userRepository } from "../repositories";
 import {
   ACCONT_NOT_VERIFIED,
   ACCOUNT_CREATED,
+  ACCOUNT_NOT_FOUND,
   ACCOUNT_VERIFIED,
   BadRequestError,
   EMAIL_VERIFICATION_BODY,
   EMAIL_VERIFICATION_TITLE,
+  FORGOT_PASSWORD_NOT_ALLOWED_FOR_SOCIAL_LOGIN,
   ForbiddenError,
   INVALID_CREDENTIALS,
   INVALID_TOKEN,
+  PASSWORD_FORGOT_EMAIL_BODY,
+  PASSWORD_FORGOT_EMAIL_TITLE,
+  PASSWORD_RESET_EMAIL_SENT,
+  UPDATED_SUCCESSFULLY,
   UnauthorizedError,
   comparePasswords,
   config,
@@ -124,6 +131,54 @@ class AuthService {
       config.jwt.accessTokenExpiry
     );
     return accessToken;
+  }
+
+  async forgotPassword(email: string): Promise<string> {
+    const user = await userRepository.findByEmailUnscoped(email);
+    if (!user) {
+      throw new BadRequestError(ACCOUNT_NOT_FOUND);
+    }
+    if (!user.email_verified_at) {
+      throw new BadRequestError(ACCONT_NOT_VERIFIED);
+    }
+
+    if (user.social_media_token) {
+      throw new BadRequestError(FORGOT_PASSWORD_NOT_ALLOWED_FOR_SOCIAL_LOGIN);
+    }
+
+    const payload: IJwtToken = {
+      id: user.id,
+      token_type: TokenType.PASSWORD_RESET,
+      user_type: UserType.USER,
+    };
+    const token: string = generateJWT(payload, config.jwt.accessTokenExpiry);
+
+    const mailOptions: IMailOptions = {
+      to: user.email,
+      subject: PASSWORD_FORGOT_EMAIL_TITLE,
+      html: PASSWORD_FORGOT_EMAIL_BODY(token),
+    };
+    await sendMail(mailOptions);
+    return PASSWORD_RESET_EMAIL_SENT;
+  }
+
+  async resetPassword(dto: PasswordResetDto): Promise<string> {
+    const decoded = verifyJWT(dto.token);
+    if (
+      decoded.user_type !== UserType.USER ||
+      decoded.token_type !== TokenType.PASSWORD_RESET
+    ) {
+      throw new ForbiddenError(INVALID_TOKEN);
+    }
+
+    const user = await userRepository.findById(decoded.id);
+    if (!user) {
+      throw new UnauthorizedError(INVALID_CREDENTIALS);
+    }
+
+    let password = await hashPassword(dto.password);
+    await userRepository.updateOne(user.id, { password });
+    return UPDATED_SUCCESSFULLY("Password");
   }
 }
 

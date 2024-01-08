@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { CreateUserDto, LoginDto } from "../interfaces";
+import { CreateUserDto, LoginDto, PasswordResetDto } from "../interfaces";
 import { plainToClass } from "class-transformer";
 import { authService } from "../services";
 import { sendSuccessResponse } from "../utils";
@@ -28,6 +28,18 @@ class AuthController {
     const { refreshToken } = req.body;
     const accessToken = await authService.generateAccessToken(refreshToken);
     return sendSuccessResponse(res, 200, { accessToken });
+  }
+
+  async forgotPassword(req: Request, res: Response): Promise<void> {
+    const { email } = req.params;
+    const message = await authService.forgotPassword(email);
+    return sendSuccessResponse(res, 200, { message });
+  }
+
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    const dto: PasswordResetDto = plainToClass(PasswordResetDto, req.body);
+    const message = await authService.resetPassword(dto);
+    return sendSuccessResponse(res, 200, { message });
   }
 }
 

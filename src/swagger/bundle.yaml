@@ -71,6 +71,31 @@ definitions:
         properties:
           accessToken:
             type: string
+  Success:
+    type: object
+    properties:
+      success:
+        type: boolean
+      data:
+        type: object
+        properties:
+          message:
+            type: string
+    example:
+      success: true
+      data:
+        message: success message
+  PasswordReset:
+    type: object
+    properties:
+      token:
+        type: string
+      password:
+        type: string
+        minLength: 8
+    required:
+      - token
+      - password
 paths:
   /auth/signup:
     post:
@@ -87,15 +112,7 @@ paths:
         '201':
           description: Register success
           schema:
-            type: object
-            properties:
-              success:
-                type: boolean
-              data:
-                type: object
-                properties:
-                  message:
-                    type: string
+            $ref: '#/definitions/Success'
         '400':
           description: Bad request
           schema:
@@ -118,15 +135,7 @@ paths:
         '200':
           description: Account verified successfully
           schema:
-            type: object
-            properties:
-              success:
-                type: boolean
-              data:
-                type: object
-                properties:
-                  message:
-                    type: string
+            $ref: '#/definitions/Success'
         '400':
           description: Bad request
           schema:
@@ -173,11 +182,76 @@ paths:
             properties:
               refreshToken:
                 type: string
+            required:
+              - refreshToken
       responses:
         '200':
           description: Access token generated success
           schema:
             $ref: '#/definitions/AccessTokenResponse'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /auth/forgot_password/{email}:
+    patch:
+      summary: forgot password api
+      tags:
+        - auth
+      parameters:
+        - in: path
+          name: email
+          description: user email
+          required: true
+      responses:
+        '200':
+          description: password reset email sent successfully
+          schema:
+            $ref: '#/definitions/Success'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /auth/reset_password:
+    post:
+      summary: password reset api
+      tags:
+        - auth
+      parameters:
+        - in: body
+          name: PasswordReset
+          description: password reset token and new password
+          schema:
+            $ref: '#/definitions/PasswordReset'
+      responses:
+        '200':
+          description: Password reset successfully
+          schema:
+            $ref: '#/definitions/Success'
         '400':
           description: Bad request
           schema:

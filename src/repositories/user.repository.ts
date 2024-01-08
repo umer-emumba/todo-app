@@ -48,6 +48,19 @@ class UserRepository {
       },
     });
   }
+
+  async updateOne(id: number, data: Partial<User>): Promise<[number]> {
+    return await User.update(
+      {
+        ...data,
+      },
+      {
+        where: {
+          id,
+        },
+      }
+    );
+  }
 }
 
 export default new UserRepository();
