@@ -1,0 +1,4 @@
+/auth/signup:
+  $ref: "./signup.auth.yaml"
+/auth/verify_account:
+  $ref: "./verify.auth.yaml"

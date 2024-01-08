@@ -1,0 +1,35 @@
+post:
+  summary: "user register"
+  tags:
+    - auth
+  parameters:
+    - in: body
+      name: user
+      description: The user to create.
+      schema:
+        $ref: "#/definitions/Auth"
+  responses:
+    201:
+      description: "Register success"
+      schema:
+        type: object
+        properties:
+          success:
+            type: boolean
+          data:
+            type: object
+            properties:
+              message:
+                type: string
+    400:
+      description: "Bad request"
+      schema:
+        type: object
+        properties:
+          success:
+            type: boolean
+          error:
+            type: string
+        example:
+          success: false
+          error: "error message"
