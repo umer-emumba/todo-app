@@ -8,6 +8,7 @@ import {
   BelongsTo,
 } from "sequelize-typescript";
 import Task from "./task.model";
+import { AttachmentType } from "../interfaces";
 
 @Table({
   timestamps: true,
@@ -21,7 +22,7 @@ export default class TaskAttachment extends Model {
 
   @Length({ max: 255 })
   @Column(DataType.ENUM("IMAGE", "VIDEO", "PDF", "DOC"))
-  declare attachment_type: string;
+  declare attachment_type: AttachmentType;
 
   @ForeignKey(() => Task)
   @Column(DataType.INTEGER)

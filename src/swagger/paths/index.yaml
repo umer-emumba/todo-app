@@ -12,3 +12,6 @@
   $ref: "./passwordReset.auth.yaml"
 /auth/social_login:
   $ref: "./socialLogin.auth.yaml"
+
+/tasks:
+  $ref: "./createTask.yaml"

@@ -5,6 +5,7 @@ patch:
   parameters:
     - in: path
       name: email
+      type: string
       description: user email
       required: true
   responses:

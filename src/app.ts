@@ -9,7 +9,7 @@ import * as fs from "fs";
 import "express-async-errors";
 
 import SwaggerExpressValidator from "swagger-express-validator";
-import { authRouter } from "./routes";
+import { authRouter, taskRouter } from "./routes";
 import { errorHandler } from "./middleware";
 import {
   DATABASE_CONNECTED,
@@ -36,6 +36,7 @@ class App {
     this.app.use(express.urlencoded({ extended: false }));
     this.app.use(cors());
     this.app.use(helmet());
+    this.app.use(express.static("public"));
   }
 
   private prepareDocsAndSetupValidator(): void {
@@ -67,11 +68,13 @@ class App {
       })
       .catch((err: any) => {
         console.error(DATABASE_CONNECTION_FAILED, err);
+        throw err;
       });
   }
 
   private routes(): void {
     this.app.use("/api/auth", authRouter);
+    this.app.use("/api/tasks", taskRouter);
   }
 
   private errorMiddleware(): void {

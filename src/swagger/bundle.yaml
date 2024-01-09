@@ -213,6 +213,7 @@ paths:
       parameters:
         - in: path
           name: email
+          type: string
           description: user email
           required: true
       responses:
@@ -287,6 +288,55 @@ paths:
           description: Login success
           schema:
             $ref: '#/definitions/LoginResponse'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /tasks:
+    post:
+      summary: create new task
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      consumes:
+        - multipart/form-data
+      parameters:
+        - in: formData
+          name: title
+          type: string
+          maxLength: 100
+          required: true
+        - in: formData
+          name: description
+          type: string
+          maxLength: 255
+          required: true
+        - in: formData
+          name: due_at
+          type: string
+          required: true
+        - in: formData
+          name: attachments
+          type: array
+          items:
+            type: string
+            format: binary
+          description: Task attachments/array of files.
+          required: false
+      responses:
+        '200':
+          description: Task Created
+          schema:
+            $ref: '#/definitions/Success'
         '400':
           description: Bad request
           schema:

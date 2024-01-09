@@ -1,7 +1,11 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "./config";
-import { IMailOptions, SocialMediaPlatform } from "../interfaces";
+import {
+  AttachmentType,
+  IMailOptions,
+  SocialMediaPlatform,
+} from "../interfaces";
 import { firebaseAdmin, mailer } from ".";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 
@@ -73,6 +77,27 @@ export const extractSocialMediaPlatform = (
       extractedPlatform = SocialMediaPlatform.GOOGLE;
       break;
   }
-
   return extractedPlatform;
+};
+
+export const extractFileTypeFromMime = (mimeType: string): AttachmentType => {
+  const imageTypes = ["image/jpeg", "image/png", "image/gif"];
+  const videoTypes = ["video/mp4", "video/mpeg"];
+  const pdfTypes = ["application/pdf"];
+  const docTypes = [
+    "application/msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+  ];
+
+  if (imageTypes.includes(mimeType)) {
+    return AttachmentType.IMAGE;
+  } else if (videoTypes.includes(mimeType)) {
+    return AttachmentType.VIDEO;
+  } else if (pdfTypes.includes(mimeType)) {
+    return AttachmentType.PDF;
+  } else if (docTypes.includes(mimeType)) {
+    return AttachmentType.DOC;
+  } else {
+    return AttachmentType.IMAGE;
+  }
 };
