@@ -41,6 +41,12 @@ class AuthController {
     const message = await authService.resetPassword(dto);
     return sendSuccessResponse(res, 200, { message });
   }
+
+  async socialLogin(req: Request, res: Response): Promise<void> {
+    const { idToken } = req.body;
+    const data: ILoginResponse = await authService.socialLogin(idToken);
+    return sendSuccessResponse(res, 200, data);
+  }
 }
 
 export default new AuthController();

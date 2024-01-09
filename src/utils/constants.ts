@@ -37,3 +37,4 @@ export const PASSWORD_FORGOT_EMAIL_BODY = (token: string) => `
 
 `;
 export const PASSWORD_RESET_EMAIL_SENT: string = `Password reset email has been sent to your email`;
+export const ACCOUNT_ALREAD_EXIST_WITH_THIS_EMAIL = `Account already exist with this email`;

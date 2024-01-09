@@ -2,6 +2,7 @@ import {
   CreateUserDto,
   ILoginResponse,
   IMailOptions,
+  ISocialLogin,
   LoginDto,
   PasswordResetDto,
 } from "../interfaces";
@@ -26,13 +27,41 @@ import {
   UnauthorizedError,
   comparePasswords,
   config,
+  extractSocialMediaPlatform,
   generateJWT,
   hashPassword,
   sendMail,
+  verifyFirebaseSocialLogin,
   verifyJWT,
 } from "../utils";
 
 class AuthService {
+  generateTokenForLogin(userId: number): ILoginResponse {
+    const accessTokenPayload: IJwtToken = {
+      id: userId,
+      user_type: UserType.USER,
+      token_type: TokenType.ACCESS,
+    };
+
+    const refreshTokenPayload: IJwtToken = {
+      id: userId,
+      user_type: UserType.USER,
+      token_type: TokenType.REFRESH,
+    };
+
+    const response: ILoginResponse = {
+      accessToken: generateJWT(
+        accessTokenPayload,
+        config.jwt.accessTokenExpiry
+      ),
+      refreshToken: generateJWT(
+        refreshTokenPayload,
+        config.jwt.refreshTokenExpiry
+      ),
+    };
+    return response;
+  }
+
   async signup(dto: CreateUserDto): Promise<string> {
     dto.password = await hashPassword(dto.password);
 
@@ -82,28 +111,7 @@ class AuthService {
       throw new BadRequestError(ACCONT_NOT_VERIFIED);
     }
 
-    const accessTokenPayload: IJwtToken = {
-      id: user.id,
-      user_type: UserType.USER,
-      token_type: TokenType.ACCESS,
-    };
-
-    const refreshTokenPayload: IJwtToken = {
-      id: user.id,
-      user_type: UserType.USER,
-      token_type: TokenType.REFRESH,
-    };
-
-    const response: ILoginResponse = {
-      accessToken: generateJWT(
-        accessTokenPayload,
-        config.jwt.accessTokenExpiry
-      ),
-      refreshToken: generateJWT(
-        refreshTokenPayload,
-        config.jwt.refreshTokenExpiry
-      ),
-    };
+    const response = this.generateTokenForLogin(user.id);
     return response;
   }
 
@@ -179,6 +187,21 @@ class AuthService {
     let password = await hashPassword(dto.password);
     await userRepository.updateOne(user.id, { password });
     return UPDATED_SUCCESSFULLY("Password");
+  }
+
+  async socialLogin(idToken: string): Promise<ILoginResponse> {
+    const decoded = await verifyFirebaseSocialLogin(idToken);
+    const socialLoginDto: ISocialLogin = {
+      email: decoded.email,
+      social_media_token: decoded.uid,
+      social_media_paltform: extractSocialMediaPlatform(
+        decoded.firebase.sign_in_provider
+      ),
+    };
+
+    const user = await userRepository.socialLogin(socialLoginDto);
+    const response = this.generateTokenForLogin(user.id);
+    return response;
   }
 }
 

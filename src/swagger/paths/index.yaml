@@ -10,3 +10,5 @@
   $ref: "./forgotPasssword.auth.yaml"
 /auth/reset_password:
   $ref: "./passwordReset.auth.yaml"
+/auth/social_login:
+  $ref: "./socialLogin.auth.yaml"

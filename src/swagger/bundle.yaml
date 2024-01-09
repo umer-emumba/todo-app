@@ -268,3 +268,34 @@ paths:
           description: internal server error
           schema:
             $ref: '#/definitions/Error'
+  /auth/social_login:
+    post:
+      summary: user social login
+      tags:
+        - auth
+      parameters:
+        - in: body
+          name: idToken
+          description: idToken from firebase after social login.
+          schema:
+            type: object
+            properties:
+              idToken:
+                type: string
+      responses:
+        '200':
+          description: Login success
+          schema:
+            $ref: '#/definitions/LoginResponse'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
