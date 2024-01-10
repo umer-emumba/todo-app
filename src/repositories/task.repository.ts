@@ -1,7 +1,8 @@
 import { QueryTypes, WhereOptions } from "sequelize";
 import {
   CreateTaskDto,
-  IPaginatedResponse,
+  IAverageTaskCompleted,
+  IOverDueTaskCount,
   ITaskCount,
   OrderEnum,
   PaginationDto,
@@ -169,6 +170,46 @@ class TaskRepository {
       }
     );
     return result;
+  }
+
+  async averageCompletedTasksPerDay(
+    userId: number
+  ): Promise<IAverageTaskCompleted> {
+    const [result]: IAverageTaskCompleted[] = await sequelize.query(
+      `
+      SELECT
+        CAST(
+          ROUND( 
+            COUNT(*) / (DATEDIFF(MAX(created_at), MIN(created_at)) + 1)
+          ) AS SIGNED
+        ) AS averageCompletedTasksPerDay
+        FROM tasks
+        WHERE user_id = :userId
+          AND is_completed = 1
+      `,
+      {
+        replacements: { userId: userId },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    return result;
+  }
+
+  async getOverDueTasksCount(userId: number): Promise<IOverDueTaskCount> {
+    const overdueTaskCount = await Task.count({
+      where: {
+        user_id: userId,
+        is_completed: 0,
+        due_at: { [Op.lt]: Sequelize.literal("CURRENT_DATE") },
+      },
+    });
+
+    let response: IOverDueTaskCount = {
+      overdueTaskCount,
+    };
+
+    return response;
   }
 }
 

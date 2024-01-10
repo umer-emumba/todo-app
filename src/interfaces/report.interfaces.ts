@@ -5,11 +5,11 @@ export interface ITaskCount {
 }
 
 export interface IAverageTaskCompleted {
-  average: number;
+  averageCompletedTasksPerDay: number;
 }
 
 export interface IOverDueTaskCount {
-  count: number;
+  overdueTaskCount: number;
 }
 
 export interface IMaxTaskCompletionDate {
