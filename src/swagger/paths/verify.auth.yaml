@@ -15,15 +15,7 @@ post:
     200:
       description: "Account verified successfully"
       schema:
-        type: object
-        properties:
-          success:
-            type: boolean
-          data:
-            type: object
-            properties:
-              message:
-                type: string
+        $ref: "#/definitions/Success"
     400:
       description: "Bad request"
       schema:

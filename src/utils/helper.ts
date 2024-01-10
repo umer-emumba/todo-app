@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import config from "./config";
-import { IMailOptions } from "../interfaces";
-import { mailer } from ".";
+import { IMailOptions, SocialMediaPlatform } from "../interfaces";
+import { firebaseAdmin, mailer } from ".";
+import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -43,4 +44,35 @@ export const sendMail = async (mailOptions: IMailOptions): Promise<void> => {
     from: config.mailer.sender,
     ...mailOptions,
   });
+};
+
+export const verifyFirebaseSocialLogin = async (
+  idToken: string
+): Promise<DecodedIdToken> => {
+  const auth = firebaseAdmin.auth();
+  const decodedToken = await auth.verifyIdToken(idToken);
+  return decodedToken;
+};
+
+export const extractSocialMediaPlatform = (
+  platform: string
+): SocialMediaPlatform => {
+  let extractedPlatform: SocialMediaPlatform;
+  switch (platform) {
+    case "google.com":
+      extractedPlatform = SocialMediaPlatform.GOOGLE;
+      break;
+    case "facebook.com":
+      extractedPlatform = SocialMediaPlatform.FACEBOOK;
+      break;
+    case "apple.com":
+      extractedPlatform = SocialMediaPlatform.APPLE;
+      break;
+
+    default:
+      extractedPlatform = SocialMediaPlatform.GOOGLE;
+      break;
+  }
+
+  return extractedPlatform;
 };

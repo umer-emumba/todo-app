@@ -6,3 +6,9 @@
   $ref: "./signin.auth.yaml"
 /auth/generate_access_token:
   $ref: "./accessToken.auth.yaml"
+/auth/forgot_password/{email}:
+  $ref: "./forgotPasssword.auth.yaml"
+/auth/reset_password:
+  $ref: "./passwordReset.auth.yaml"
+/auth/social_login:
+  $ref: "./socialLogin.auth.yaml"

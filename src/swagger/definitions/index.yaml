@@ -8,3 +8,7 @@ Error:
   $ref: "./error.yaml"
 AccessTokenResponse:
   $ref: "./accessToken.response.yaml"
+Success:
+  $ref: "./success.yaml"
+PasswordReset:
+  $ref: "./passwordReset.yaml"

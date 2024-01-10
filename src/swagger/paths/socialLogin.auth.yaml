@@ -1,33 +1,27 @@
 post:
-  summary: "generate access token using refresh token"
+  summary: "user social login"
   tags:
     - auth
   parameters:
     - in: body
-      name: refreshToken
-      description: refresh token
+      name: idToken
+      description: idToken from firebase after social login.
       schema:
         type: object
         properties:
-          refreshToken:
+          idToken:
             type: string
-        required:
-          - refreshToken
   responses:
     200:
-      description: "Access token generated success"
+      description: "Login success"
       schema:
-        $ref: "#/definitions/AccessTokenResponse"
+        $ref: "#/definitions/LoginResponse"
     400:
       description: "Bad request"
       schema:
         $ref: "#/definitions/Error"
     401:
       description: "unauthorized request"
-      schema:
-        $ref: "#/definitions/Error"
-    403:
-      description: "Forbidden request"
       schema:
         $ref: "#/definitions/Error"
     500:

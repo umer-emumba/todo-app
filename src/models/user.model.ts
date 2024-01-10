@@ -13,7 +13,7 @@ import Task from "./task.model";
 
 @DefaultScope(() => ({
   attributes: {
-    exclude: ["password"],
+    exclude: ["password", "social_media_token"],
   },
 }))
 @Table({

@@ -1,23 +1,17 @@
-post:
-  summary: "generate access token using refresh token"
+patch:
+  summary: "forgot password api"
   tags:
     - auth
   parameters:
-    - in: body
-      name: refreshToken
-      description: refresh token
-      schema:
-        type: object
-        properties:
-          refreshToken:
-            type: string
-        required:
-          - refreshToken
+    - in: path
+      name: email
+      description: user email
+      required: true
   responses:
     200:
-      description: "Access token generated success"
+      description: "password reset email sent successfully"
       schema:
-        $ref: "#/definitions/AccessTokenResponse"
+        $ref: "#/definitions/Success"
     400:
       description: "Bad request"
       schema:
