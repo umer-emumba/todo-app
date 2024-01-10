@@ -16,5 +16,10 @@ router.get(
   jwtAuth,
   reportController.getMaxTaskCompletionDate
 );
+router.get(
+  "/tasks_creation_by_weekday",
+  jwtAuth,
+  reportController.getTasksCreationByDayCount
+);
 
 export default router;

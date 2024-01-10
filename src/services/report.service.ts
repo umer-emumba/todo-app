@@ -3,6 +3,7 @@ import {
   IMaxTaskCompletionDate,
   IOverDueTaskCount,
   ITaskCount,
+  ITasksPerDay,
 } from "../interfaces";
 import { taskRepository } from "../repositories";
 
@@ -25,6 +26,10 @@ class ReportService {
     userId: number
   ): Promise<IMaxTaskCompletionDate> {
     return taskRepository.getMaxTaskCompletionDate(userId);
+  }
+
+  async getTasksCreationByDayCount(userId: number): Promise<ITasksPerDay[]> {
+    return taskRepository.getTasksCreationByDayCount(userId);
   }
 }
 

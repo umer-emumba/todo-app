@@ -5,6 +5,7 @@ import {
   IMaxTaskCompletionDate,
   IOverDueTaskCount,
   ITaskCount,
+  ITasksPerDay,
   OrderEnum,
   PaginationDto,
   UpdateTaskDto,
@@ -234,6 +235,29 @@ class TaskRepository {
       }
     );
 
+    return result;
+  }
+
+  async getTasksCreationByDayCount(userId: number): Promise<ITasksPerDay[]> {
+    const result: ITasksPerDay[] = await sequelize.query(
+      `
+      WITH DaysOfWeek AS (
+        SELECT 'Sunday' AS dayOfWeek
+        UNION SELECT 'Monday' UNION SELECT 'Tuesday' UNION SELECT 'Wednesday'
+        UNION SELECT 'Thursday' UNION SELECT 'Friday' UNION SELECT 'Saturday'
+      )
+      SELECT
+        DaysOfWeek.dayOfWeek,
+        COUNT(tasks.id) AS taskCount
+      FROM DaysOfWeek
+      LEFT JOIN tasks ON DaysOfWeek.dayOfWeek = DAYNAME(tasks.created_at) AND tasks.user_id = :userId
+      GROUP BY DaysOfWeek.dayOfWeek;
+      `,
+      {
+        replacements: { userId: userId },
+        type: QueryTypes.SELECT,
+      }
+    );
     return result;
   }
 }

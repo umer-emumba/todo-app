@@ -18,6 +18,6 @@ export interface IMaxTaskCompletionDate {
 }
 
 export interface ITasksPerDay {
-  day: string;
-  count: number;
+  dayOfWeek: string;
+  taskCount: number;
 }
