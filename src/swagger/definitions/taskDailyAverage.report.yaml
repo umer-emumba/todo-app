@@ -1,0 +1,4 @@
+type: object
+properties:
+  averageCompletedTasksPerDay:
+    type: integer

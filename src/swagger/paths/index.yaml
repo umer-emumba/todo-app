@@ -21,3 +21,14 @@
   $ref: "./completeTask.yaml"
 /tasks/{id}/similar_tasks:
   $ref: "./similarTask.yaml"
+
+/reports/tasks_count:
+  $ref: "./taskCount.report.yaml"
+/reports/daily_task_avg:
+  $ref: "./taskDailyAverage.report.yaml"
+/reports/over_due_tasks:
+  $ref: "./overdueCount.report.yaml"
+/reports/max_task_completion_date:
+  $ref: "./maximumTaskDate.report.yaml"
+/reports/tasks_creation_by_weekday:
+  $ref: "./taskPerDay.report.yaml"

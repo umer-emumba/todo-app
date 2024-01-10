@@ -1,0 +1,8 @@
+type: object
+properties:
+  totalTasks:
+    type: integer
+  completedTasks:
+    type: integer
+  remainingTasks:
+    type: integer

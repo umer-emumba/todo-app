@@ -1,0 +1,7 @@
+type: object
+properties:
+  maxTaskCompletionDate:
+    type: string
+    formate: date
+  completedTasksCount:
+    type: integer

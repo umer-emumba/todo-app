@@ -12,6 +12,10 @@ schemes:
 tags:
   - name: auth
     description: authentication apis
+  - name: task
+    description: tasks apis
+  - name: reports
+    description: reports apis
 
 securityDefinitions:
   bearerAuth:

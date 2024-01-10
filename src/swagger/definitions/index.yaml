@@ -18,3 +18,13 @@ TaskDetail:
   $ref: "./taskDetail.yaml"
 UpdateTask:
   $ref: "./updateTask.yaml"
+TaskCountReport:
+  $ref: "./taskCount.report.yaml"
+TaskDailyAverageReport:
+  $ref: "./taskDailyAverage.report.yaml"
+OverDueTaskCountReport:
+  $ref: "./overDueTask.report.yaml"
+MaxTaskCompletionDateReport:
+  $ref: "./maxTaskCompletionDate.report.yaml"
+TasksCreationByDateReport:
+  $ref: "./tasksCreationByDay.report.yaml"
