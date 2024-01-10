@@ -164,7 +164,7 @@ class TaskRepository {
           CAST(SUM(CASE WHEN is_completed = 1 THEN 1 ELSE 0 END) AS SIGNED) AS completedTasks,
           CAST(SUM(CASE WHEN is_completed = 0 THEN 1 ELSE 0 END) AS SIGNED) AS remainingTasks
         FROM tasks
-        WHERE user_id = :userId
+        WHERE user_id = :userId AND deletedAt IS NULL
       `,
       {
         replacements: { userId: userId },
@@ -187,7 +187,7 @@ class TaskRepository {
         ) AS averageCompletedTasksPerDay
         FROM tasks
         WHERE user_id = :userId
-          AND is_completed = 1
+          AND is_completed = 1 AND deletedAt IS NULL
       `,
       {
         replacements: { userId: userId },
@@ -225,6 +225,7 @@ class TaskRepository {
       FROM tasks
       WHERE user_id = :userId
         AND is_completed = 1
+        AND deletedAt IS NULL
       GROUP BY maxTaskCompletionDate
       ORDER BY completedTasksCount DESC
       LIMIT 1;
@@ -249,8 +250,8 @@ class TaskRepository {
       SELECT
         DaysOfWeek.dayOfWeek,
         COUNT(tasks.id) AS taskCount
-      FROM DaysOfWeek
-      LEFT JOIN tasks ON DaysOfWeek.dayOfWeek = DAYNAME(tasks.created_at) AND tasks.user_id = :userId
+      FROM DaysOfWeek 
+      LEFT JOIN tasks ON DaysOfWeek.dayOfWeek = DAYNAME(tasks.created_at) AND tasks.user_id = :userId AND tasks.deletedAt IS NULL
       GROUP BY DaysOfWeek.dayOfWeek;
       `,
       {

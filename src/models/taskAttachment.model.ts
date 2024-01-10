@@ -14,6 +14,7 @@ import { AttachmentType } from "../interfaces";
   timestamps: true,
   underscored: true,
   tableName: "task_attachments",
+  paranoid: true,
 })
 export default class TaskAttachment extends Model {
   @Length({ max: 255 })
