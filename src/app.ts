@@ -9,7 +9,7 @@ import * as fs from "fs";
 import "express-async-errors";
 
 import SwaggerExpressValidator from "swagger-express-validator";
-import { authRouter, taskRouter } from "./routes";
+import { authRouter, reportRouter, taskRouter } from "./routes";
 import { errorHandler } from "./middleware";
 import {
   DATABASE_CONNECTED,
@@ -75,6 +75,7 @@ class App {
   private routes(): void {
     this.app.use("/api/auth", authRouter);
     this.app.use("/api/tasks", taskRouter);
+    this.app.use("/api/reports", reportRouter);
   }
 
   private errorMiddleware(): void {

@@ -1,7 +1,8 @@
-import { WhereOptions } from "sequelize";
+import { QueryTypes, WhereOptions } from "sequelize";
 import {
   CreateTaskDto,
   IPaginatedResponse,
+  ITaskCount,
   OrderEnum,
   PaginationDto,
   UpdateTaskDto,
@@ -9,6 +10,7 @@ import {
 import { Task, TaskAttachment } from "../models";
 import { Op } from "sequelize";
 import { Sequelize } from "sequelize-typescript";
+import sequelize from "../models/connection";
 
 class TaskRepository {
   async countById(userId: number): Promise<number> {
@@ -149,6 +151,24 @@ class TaskRepository {
     });
 
     return similarTasks;
+  }
+
+  async getTasksCount(userId: number): Promise<ITaskCount> {
+    const [result]: ITaskCount[] = await sequelize.query(
+      `
+        SELECT
+          COUNT(*) AS totalTasks,
+          CAST(SUM(CASE WHEN is_completed = 1 THEN 1 ELSE 0 END) AS SIGNED) AS completedTasks,
+          CAST(SUM(CASE WHEN is_completed = 0 THEN 1 ELSE 0 END) AS SIGNED) AS remainingTasks
+        FROM tasks
+        WHERE user_id = :userId
+      `,
+      {
+        replacements: { userId: userId },
+        type: QueryTypes.SELECT,
+      }
+    );
+    return result;
   }
 }
 
