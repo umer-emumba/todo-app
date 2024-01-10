@@ -1,0 +1,20 @@
+type: object
+properties:
+  id:
+    type: integer
+  title:
+    type: string
+  description:
+    type: string
+  due_at:
+    type: string
+  is_completed:
+    type: integer
+  user_id:
+    type: integer
+  completed_at:
+    type: string
+  createdAt:
+    type: string
+  updatedAt:
+    type: string

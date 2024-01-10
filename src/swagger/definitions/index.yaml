@@ -12,3 +12,9 @@ Success:
   $ref: "./success.yaml"
 PasswordReset:
   $ref: "./passwordReset.yaml"
+Task:
+  $ref: "./task.yaml"
+TaskDetail:
+  $ref: "./taskDetail.yaml"
+UpdateTask:
+  $ref: "./updateTask.yaml"

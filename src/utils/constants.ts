@@ -40,3 +40,7 @@ export const PASSWORD_FORGOT_EMAIL_BODY = (token: string) => `
 export const PASSWORD_RESET_EMAIL_SENT: string = `Password reset email has been sent to your email`;
 export const ACCOUNT_ALREAD_EXIST_WITH_THIS_EMAIL: string = `Account already exist with this email`;
 export const TASK_LIMIT_EXCEEDED: string = `Your max task limit exceeded`;
+export const NOT_FOUND_ERROR = (item: string): string => `${item} not found`;
+export const TASK_ALREADY_COMPLETED: string = `Task already completed`;
+export const DELETED_SUCCESSFULLY = (item: string): string =>
+  `${item} deleted successfully`;

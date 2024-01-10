@@ -96,6 +96,118 @@ definitions:
     required:
       - token
       - password
+  Task:
+    type: object
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+      description:
+        type: string
+      due_at:
+        type: string
+      is_completed:
+        type: integer
+      user_id:
+        type: integer
+      completed_at:
+        type: string
+      createdAt:
+        type: string
+      updatedAt:
+        type: string
+  TaskDetail:
+    type: object
+    properties:
+      id:
+        type: integer
+      title:
+        type: string
+      description:
+        type: string
+      due_at:
+        type: string
+      is_completed:
+        type: integer
+      user_id:
+        type: integer
+      completed_at:
+        type: string
+      createdAt:
+        type: string
+      updatedAt:
+        type: string
+      task_attachments:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: integer
+            attachment_url:
+              type: string
+            attachment_type:
+              type: string
+            task_id:
+              type: integer
+            createdAt:
+              type: string
+            updatedAt:
+              type: string
+  UpdateTask:
+    type: object
+    properties:
+      title:
+        type: string
+      description:
+        type: string
+      due_at:
+        type: string
+    required:
+      - title
+      - description
+      - due_at
+parameters:
+  limitParam:
+    in: query
+    name: limit
+    required: false
+    type: integer
+    minimum: 1
+    maximum: 50
+    default: 20
+    description: The numbers of items to return.
+  offsetParam:
+    in: query
+    name: offset
+    required: false
+    type: integer
+    minimum: 0
+    default: 0
+    description: The number of items to skip before starting to collect the result set.
+  searchParam:
+    in: query
+    name: text
+    required: false
+    type: string
+    description: The search field to filter the results.
+  orderParam:
+    in: query
+    name: order
+    required: false
+    type: string
+    enum:
+      - asc
+      - desc
+    default: desc
+    description: The order of items to return.
+  idParam:
+    in: path
+    name: id
+    type: integer
+    required: true
+    description: Id of an entity.
 paths:
   /auth/signup:
     post:
@@ -343,6 +455,174 @@ paths:
             $ref: '#/definitions/Error'
         '401':
           description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+    get:
+      summary: get task paginated listing
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/parameters/limitParam'
+        - $ref: '#/parameters/offsetParam'
+        - $ref: '#/parameters/searchParam'
+        - $ref: '#/parameters/orderParam'
+      responses:
+        '200':
+          description: listing of tasks
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: object
+                properties:
+                  count:
+                    type: integer
+                  rows:
+                    type: array
+                    items:
+                      $ref: '#/definitions/Task'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /tasks/{id}:
+    get:
+      summary: get task details
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/parameters/idParam'
+      responses:
+        '200':
+          description: task detail
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                $ref: '#/definitions/TaskDetail'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      summary: delete task
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/parameters/idParam'
+      responses:
+        '200':
+          description: task deleted
+          schema:
+            $ref: '#/definitions/Success'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      summary: update task
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/parameters/idParam'
+        - in: body
+          name: updateTask
+          description: update task payload.
+          schema:
+            $ref: '#/definitions/UpdateTask'
+      responses:
+        '200':
+          description: Task Updated
+          schema:
+            $ref: '#/definitions/Success'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /tasks/{id}/completed:
+    patch:
+      summary: mark task as completed
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/parameters/idParam'
+      responses:
+        '200':
+          description: task updated
+          schema:
+            $ref: '#definitions/Success'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
           schema:
             $ref: '#/definitions/Error'
         '500':

@@ -5,3 +5,5 @@ export * from "./IMailOptions";
 export * from "./ILoginResponse";
 export * from "./ISocialLogin";
 export * from "./dtos/task.dto";
+export * from "./dtos/pagination.dto";
+export * from "./IPaginatedResponse";

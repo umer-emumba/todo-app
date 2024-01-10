@@ -1,0 +1,94 @@
+get:
+  summary: "get task details"
+  tags:
+    - task
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "#/parameters/idParam"
+  responses:
+    200:
+      description: "task detail"
+      schema:
+        type: object
+        properties:
+          success:
+            type: boolean
+          data:
+            $ref: "#/definitions/TaskDetail"
+    400:
+      description: "Bad request"
+      schema:
+        $ref: "#/definitions/Error"
+    401:
+      description: "unauthorized request"
+      schema:
+        $ref: "#/definitions/Error"
+    403:
+      description: "Forbidden request"
+      schema:
+        $ref: "#/definitions/Error"
+    500:
+      description: "internal server error"
+      schema:
+        $ref: "#/definitions/Error"
+delete:
+  summary: "delete task"
+  tags:
+    - task
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "#/parameters/idParam"
+  responses:
+    200:
+      description: "task deleted"
+      schema:
+        $ref: "#/definitions/Success"
+    400:
+      description: "Bad request"
+      schema:
+        $ref: "#/definitions/Error"
+    401:
+      description: "unauthorized request"
+      schema:
+        $ref: "#/definitions/Error"
+    403:
+      description: "Forbidden request"
+      schema:
+        $ref: "#/definitions/Error"
+    500:
+      description: "internal server error"
+      schema:
+        $ref: "#/definitions/Error"
+put:
+  summary: "update task"
+  tags:
+    - task
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "#/parameters/idParam"
+    - in: body
+      name: updateTask
+      description: update task payload.
+      schema:
+        $ref: "#/definitions/UpdateTask"
+
+  responses:
+    200:
+      description: "Task Updated"
+      schema:
+        $ref: "#/definitions/Success"
+    400:
+      description: "Bad request"
+      schema:
+        $ref: "#/definitions/Error"
+    401:
+      description: "unauthorized request"
+      schema:
+        $ref: "#/definitions/Error"
+    500:
+      description: "internal server error"
+      schema:
+        $ref: "#/definitions/Error"

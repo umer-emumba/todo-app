@@ -5,6 +5,12 @@ export class CreateTaskDto {
   declare task_attachments?: Attachment[];
 }
 
+export class UpdateTaskDto {
+  declare title: string;
+  declare description: string;
+  declare due_at: Date;
+}
+
 export enum AttachmentType {
   IMAGE = "IMAGE",
   VIDEO = "VIDEO",

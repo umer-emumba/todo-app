@@ -1,0 +1,10 @@
+limitParam:
+  $ref: "./limitParam.yaml"
+offsetParam:
+  $ref: "./offsetParam.yaml"
+searchParam:
+  $ref: "./searchParam.yaml"
+orderParam:
+  $ref: "./orderParam.yaml"
+idParam:
+  $ref: "./idParam.yaml"
