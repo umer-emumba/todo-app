@@ -26,4 +26,5 @@ export interface IAppConfig {
   mailer: IMailConfig;
   jwt: IJWTConfig;
   frontendUrl: string;
+  maxTaskCount: number;
 }

@@ -1,0 +1,12 @@
+type: object
+properties:
+  title:
+    type: string
+  description:
+    type: string
+  due_at:
+    type: string
+required:
+  - title
+  - description
+  - due_at

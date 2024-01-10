@@ -12,3 +12,10 @@
   $ref: "./passwordReset.auth.yaml"
 /auth/social_login:
   $ref: "./socialLogin.auth.yaml"
+
+/tasks:
+  $ref: "./tasks.yaml"
+/tasks/{id}:
+  $ref: "./taskWithId.yaml"
+/tasks/{id}/completed:
+  $ref: "./completeTask.yaml"

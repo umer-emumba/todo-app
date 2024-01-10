@@ -1,0 +1,7 @@
+in: query
+name: order
+required: false
+type: string
+enum: [asc, desc]
+default: desc
+description: The order of items to return.

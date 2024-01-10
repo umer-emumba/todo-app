@@ -1,18 +1,16 @@
 patch:
-  summary: "forgot password api"
+  summary: "mark task as completed"
   tags:
-    - auth
+    - task
+  security:
+    - bearerAuth: []
   parameters:
-    - in: path
-      name: email
-      type: string
-      description: user email
-      required: true
+    - $ref: "#/parameters/idParam"
   responses:
     200:
-      description: "password reset email sent successfully"
+      description: "task updated"
       schema:
-        $ref: "#/definitions/Success"
+        $ref: "#definitions/Success"
     400:
       description: "Bad request"
       schema:

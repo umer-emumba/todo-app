@@ -7,3 +7,4 @@ export * from "./logger";
 export { default as mailer } from "./mailer";
 export * from "./helper";
 export { default as firebaseAdmin } from "./firebase";
+export * from "./multer.config";

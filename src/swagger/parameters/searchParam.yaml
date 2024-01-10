@@ -1,0 +1,5 @@
+in: query
+name: text
+required: false
+type: string
+description: The search field to filter the results.

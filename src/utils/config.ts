@@ -26,6 +26,9 @@ const config: IAppConfig = {
       ? parseInt(process.env.JWT_REFRESH_EXPIRY)
       : 604800,
   },
+  maxTaskCount: process.env.MAX_TASK_COUNT
+    ? parseInt(process.env.MAX_TASK_COUNT)
+    : 50,
 };
 
 export default config;
