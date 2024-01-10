@@ -629,3 +629,40 @@ paths:
           description: internal server error
           schema:
             $ref: '#/definitions/Error'
+  /tasks/{id}/similar_tasks:
+    get:
+      summary: 'get similar tasks '
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/parameters/idParam'
+      responses:
+        '200':
+          description: similar task listings
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Task'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'

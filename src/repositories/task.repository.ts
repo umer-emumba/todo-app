@@ -8,6 +8,7 @@ import {
 } from "../interfaces";
 import { Task, TaskAttachment } from "../models";
 import { Op } from "sequelize";
+import { Sequelize } from "sequelize-typescript";
 
 class TaskRepository {
   async countById(userId: number): Promise<number> {
@@ -125,6 +126,29 @@ class TaskRepository {
         },
       ],
     });
+  }
+
+  async findSimilarTasks(task: Task): Promise<Task[]> {
+    const similarTasks = await Task.findAll({
+      where: {
+        [Op.or]: [
+          Sequelize.literal(
+            `MATCH(title) AGAINST('${task.title}' IN BOOLEAN MODE)`
+          ),
+          Sequelize.literal(
+            `MATCH(title) AGAINST('${task.title}' IN BOOLEAN MODE)`
+          ),
+        ],
+        id: {
+          [Op.not]: task.id, // Exclude the same task
+        },
+        user_id: task.user_id,
+      },
+      limit: 5,
+      order: [["id", "desc"]],
+    });
+
+    return similarTasks;
   }
 }
 

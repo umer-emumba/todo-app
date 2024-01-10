@@ -19,3 +19,5 @@
   $ref: "./taskWithId.yaml"
 /tasks/{id}/completed:
   $ref: "./completeTask.yaml"
+/tasks/{id}/similar_tasks:
+  $ref: "./similarTask.yaml"
