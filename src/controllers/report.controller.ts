@@ -23,6 +23,12 @@ class ReportController {
     const data = await reportService.getOverDueTasksCount(user.id);
     return sendSuccessResponse(res, 200, data);
   }
+
+  async getMaxTaskCompletionDate(req: Request, res: Response): Promise<void> {
+    const user = req.user;
+    const data = await reportService.getMaxTaskCompletionDate(user.id);
+    return sendSuccessResponse(res, 200, data);
+  }
 }
 
 export default new ReportController();

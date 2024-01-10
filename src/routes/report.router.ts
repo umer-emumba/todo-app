@@ -11,5 +11,10 @@ router.get(
   reportController.averageCompletedTasksPerDay
 );
 router.get("/over_due_tasks", jwtAuth, reportController.getOverDueTasksCount);
+router.get(
+  "/max_task_completion_date",
+  jwtAuth,
+  reportController.getMaxTaskCompletionDate
+);
 
 export default router;

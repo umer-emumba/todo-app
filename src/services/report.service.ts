@@ -1,5 +1,6 @@
 import {
   IAverageTaskCompleted,
+  IMaxTaskCompletionDate,
   IOverDueTaskCount,
   ITaskCount,
 } from "../interfaces";
@@ -18,6 +19,12 @@ class ReportService {
 
   async getOverDueTasksCount(userId: number): Promise<IOverDueTaskCount> {
     return taskRepository.getOverDueTasksCount(userId);
+  }
+
+  async getMaxTaskCompletionDate(
+    userId: number
+  ): Promise<IMaxTaskCompletionDate> {
+    return taskRepository.getMaxTaskCompletionDate(userId);
   }
 }
 

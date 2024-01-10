@@ -2,6 +2,7 @@ import { QueryTypes, WhereOptions } from "sequelize";
 import {
   CreateTaskDto,
   IAverageTaskCompleted,
+  IMaxTaskCompletionDate,
   IOverDueTaskCount,
   ITaskCount,
   OrderEnum,
@@ -210,6 +211,30 @@ class TaskRepository {
     };
 
     return response;
+  }
+
+  async getMaxTaskCompletionDate(
+    userId: number
+  ): Promise<IMaxTaskCompletionDate> {
+    const [result]: IMaxTaskCompletionDate[] = await sequelize.query(
+      `
+      SELECT
+        DATE(completed_at) AS maxTaskCompletionDate,
+        COUNT(*) AS completedTasksCount
+      FROM tasks
+      WHERE user_id = :userId
+        AND is_completed = 1
+      GROUP BY maxTaskCompletionDate
+      ORDER BY completedTasksCount DESC
+      LIMIT 1;
+      `,
+      {
+        replacements: { userId: userId },
+        type: QueryTypes.SELECT,
+      }
+    );
+
+    return result;
   }
 }
 

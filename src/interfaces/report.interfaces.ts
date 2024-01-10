@@ -13,7 +13,8 @@ export interface IOverDueTaskCount {
 }
 
 export interface IMaxTaskCompletionDate {
-  date: Date;
+  maxTaskCompletionDate: Date;
+  completedTasksCount: number;
 }
 
 export interface ITasksPerDay {
