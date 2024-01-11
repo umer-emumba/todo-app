@@ -14,6 +14,7 @@ import { Task, TaskAttachment, User } from "../models";
 import { Op } from "sequelize";
 import { Sequelize } from "sequelize-typescript";
 import sequelize from "../models/connection";
+import dayjs from "dayjs";
 
 class TaskRepository {
   async countById(userId: number): Promise<number> {
@@ -212,25 +213,26 @@ class TaskRepository {
   async averageCompletedTasksPerDay(
     userId: number
   ): Promise<IAverageTaskCompleted> {
-    const [result]: IAverageTaskCompleted[] = await sequelize.query(
-      `
-      SELECT
-        CAST(
-          ROUND( 
-            COUNT(*) / (DATEDIFF(MAX(created_at), MIN(created_at)) + 1)
-          ) AS SIGNED
-        ) AS averageCompletedTasksPerDay
-        FROM tasks
-        WHERE user_id = :userId
-          AND is_completed = 1 AND deleted_at IS NULL
-      `,
-      {
-        replacements: { userId: userId },
-        type: QueryTypes.SELECT,
-      }
-    );
+    const result = await Task.findOne({
+      attributes: [
+        [Sequelize.fn("COUNT", Sequelize.col("id")), "total"],
+        [Sequelize.fn("MAX", sequelize.col("created_at")), "max_date"],
+        [Sequelize.fn("MIN", sequelize.col("created_at")), "min_date"],
+      ],
+      where: {
+        user_id: userId,
+        is_completed: 1,
+        deleted_at: null,
+      },
+    });
+    let totalRows = result?.getDataValue("total");
+    let maxDate = dayjs(result?.getDataValue("max_date"));
+    let minDate = dayjs(result?.getDataValue("min_date"));
+    let average: IAverageTaskCompleted = {
+      averageCompletedTasksPerDay: totalRows / maxDate.diff(minDate, "d"),
+    };
 
-    return result;
+    return average;
   }
 
   async getOverDueTasksCount(userId: number): Promise<IOverDueTaskCount> {
