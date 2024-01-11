@@ -1,4 +1,5 @@
 import app from "./app";
+import { cronService } from "./services";
 import config from "./utils/config";
 import cluster from "cluster";
 import os from "os";
@@ -14,6 +15,8 @@ if (cluster.isPrimary) {
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
+  //start email reminder cron service
+  cronService.sendEmailReminders();
 
   cluster.on("exit", (worker, code, signal) => {
     console.log(`Worker ${worker.process.pid} died`);

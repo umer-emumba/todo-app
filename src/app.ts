@@ -7,6 +7,7 @@ import swaggerUi, { JsonObject } from "swagger-ui-express";
 import * as YAML from "js-yaml";
 import * as fs from "fs";
 import "express-async-errors";
+import { BullMQAdapter } from "bull-board/bullMQAdapter";
 
 import SwaggerExpressValidator from "swagger-express-validator";
 import { authRouter, reportRouter, taskRouter } from "./routes";
@@ -18,6 +19,9 @@ import {
   logger,
   handleValidationErrors,
 } from "./utils";
+import { QueueService } from "./services";
+import { QueuesEnum } from "./interfaces";
+import { createBullBoard } from "bull-board";
 
 class App {
   public app: Application;
@@ -28,6 +32,7 @@ class App {
     this.databaseSetup();
     this.prepareDocsAndSetupValidator();
     this.routes();
+    this.setupJobDashboard();
     this.errorMiddleware();
   }
 
@@ -80,6 +85,15 @@ class App {
 
   private errorMiddleware(): void {
     this.app.use(errorHandler);
+  }
+
+  private setupJobDashboard(): void {
+    const defaultQueue = new QueueService().getQueue(QueuesEnum.DEFAULT);
+    if (defaultQueue) {
+      const router = createBullBoard([new BullMQAdapter(defaultQueue)]).router;
+
+      this.app.use("/jobs", router);
+    }
   }
 }
 

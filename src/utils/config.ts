@@ -29,6 +29,10 @@ const config: IAppConfig = {
   maxTaskCount: process.env.MAX_TASK_COUNT
     ? parseInt(process.env.MAX_TASK_COUNT)
     : 50,
+  redis: {
+    host: process.env.REDIS_HOST || "127.0.0.1",
+    port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
+  },
 };
 
 export default config;

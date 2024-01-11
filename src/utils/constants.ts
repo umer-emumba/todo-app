@@ -44,3 +44,9 @@ export const NOT_FOUND_ERROR = (item: string): string => `${item} not found`;
 export const TASK_ALREADY_COMPLETED: string = `Task already completed`;
 export const DELETED_SUCCESSFULLY = (item: string): string =>
   `${item} deleted successfully`;
+
+export const REMINDER_EMAIL_TITLE: string = `Task Reminder`;
+export const REMINDER_EMAIL_BODY = (title: string) => `
+<p>Hi, <strong>${title}</strong> task is due today</p>
+
+`;

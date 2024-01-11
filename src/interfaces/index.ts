@@ -8,3 +8,4 @@ export * from "./dtos/task.dto";
 export * from "./dtos/pagination.dto";
 export * from "./IPaginatedResponse";
 export * from "./report.interfaces";
+export * from "./IBullMqOptions";

@@ -10,7 +10,7 @@ import {
   PaginationDto,
   UpdateTaskDto,
 } from "../interfaces";
-import { Task, TaskAttachment } from "../models";
+import { Task, TaskAttachment, User } from "../models";
 import { Op } from "sequelize";
 import { Sequelize } from "sequelize-typescript";
 import sequelize from "../models/connection";
@@ -154,6 +154,21 @@ class TaskRepository {
     });
 
     return similarTasks;
+  }
+
+  async getTodayTasks(): Promise<Task[]> {
+    return Task.findAll({
+      attributes: ["id", "title"],
+      where: {
+        [Op.and]: [Sequelize.literal(`DATE(due_at)=CURDATE()`)],
+      },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "email"],
+        },
+      ],
+    });
   }
 
   async getTasksCount(userId: number): Promise<ITaskCount> {
