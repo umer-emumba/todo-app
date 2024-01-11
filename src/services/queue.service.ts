@@ -38,7 +38,7 @@ export default class QueueService {
       async (job: Job) => {
         switch (job.name) {
           case JobTypeEnum.SEND_EMAIL:
-            await DefaultProcessor.sendReminderEmail(job);
+            await DefaultProcessor.sendJobEmail(job);
             break;
         }
         logger.info("[DEFAULT QUEUE] Worker for default queue");

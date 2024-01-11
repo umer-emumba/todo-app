@@ -3,8 +3,10 @@ import {
   ILoginResponse,
   IMailOptions,
   ISocialLogin,
+  JobTypeEnum,
   LoginDto,
   PasswordResetDto,
+  QueuesEnum,
 } from "../interfaces";
 import { IJwtToken, TokenType, UserType } from "../interfaces/IJwtToken";
 import { userRepository } from "../repositories";
@@ -34,6 +36,7 @@ import {
   verifyFirebaseSocialLogin,
   verifyJWT,
 } from "../utils";
+import QueueService from "./queue.service";
 
 class AuthService {
   generateTokenForLogin(userId: number): ILoginResponse {
@@ -71,13 +74,17 @@ class AuthService {
       token_type: TokenType.EMAIL_VERIFICATION,
       user_type: UserType.USER,
     };
+
     const token: string = generateJWT(payload);
     const mailOptions: IMailOptions = {
       to: user.email,
       subject: EMAIL_VERIFICATION_TITLE,
       html: EMAIL_VERIFICATION_BODY(token),
     };
-    await sendMail(mailOptions);
+
+    const instance = new QueueService();
+    const queue = instance.getQueue(QueuesEnum.DEFAULT);
+    queue.add(JobTypeEnum.SEND_EMAIL, mailOptions);
 
     return ACCOUNT_CREATED;
   }

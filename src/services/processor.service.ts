@@ -4,7 +4,7 @@ import { QueuesEnum } from "../interfaces";
 import { logger, sendMail } from "../utils";
 
 export default class DefaultProcessor {
-  static async sendReminderEmail(job: Job) {
+  static async sendJobEmail(job: Job) {
     const queue = new QueueService().getQueue(QueuesEnum.DEFAULT);
     if (!queue) return;
     await sendMail(job.data);
