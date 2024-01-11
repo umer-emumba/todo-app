@@ -240,7 +240,7 @@ class TaskRepository {
       where: {
         user_id: userId,
         is_completed: 0,
-        due_at: { [Op.lt]: Sequelize.literal("CURRENT_DATE") },
+        due_at: { [Op.lt]: new Date() },
       },
     });
 
@@ -254,25 +254,26 @@ class TaskRepository {
   async getMaxTaskCompletionDate(
     userId: number
   ): Promise<IMaxTaskCompletionDate> {
-    const [result]: IMaxTaskCompletionDate[] = await sequelize.query(
-      `
-      SELECT
-        DATE(completed_at) AS maxTaskCompletionDate,
-        COUNT(*) AS completedTasksCount
-      FROM tasks
-      WHERE user_id = :userId
-        AND is_completed = 1
-        AND deleted_at IS NULL
-      GROUP BY maxTaskCompletionDate
-      ORDER BY completedTasksCount DESC
-      LIMIT 1;
-      `,
-      {
-        replacements: { userId: userId },
-        type: QueryTypes.SELECT,
-      }
-    );
-
+    const query = await Task.findOne({
+      attributes: [
+        [
+          Sequelize.fn("DATE", Sequelize.col("created_at")),
+          "maxTaskCompletionDate",
+        ],
+        [Sequelize.fn("COUNT", Sequelize.col("id")), "completedTasksCount"],
+      ],
+      where: {
+        user_id: userId,
+        is_completed: 1,
+      },
+      group: [Sequelize.fn("DATE", Sequelize.col("created_at"))],
+      order: [[Sequelize.fn("COUNT", Sequelize.col("id")), "DESC"]],
+      limit: 1,
+    });
+    let result: IMaxTaskCompletionDate = {
+      completedTasksCount: query?.getDataValue("completedTasksCount"),
+      maxTaskCompletionDate: query?.getDataValue("maxTaskCompletionDate"),
+    };
     return result;
   }
 
