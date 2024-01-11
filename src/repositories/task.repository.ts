@@ -160,7 +160,13 @@ class TaskRepository {
     return Task.findAll({
       attributes: ["id", "title"],
       where: {
-        [Op.and]: [Sequelize.literal(`DATE(due_at)=CURDATE()`)],
+        [Op.and]: [
+          Sequelize.where(
+            Sequelize.fn("DATE", Sequelize.col("due_at")),
+            "=",
+            Sequelize.fn("CURDATE")
+          ),
+        ],
       },
       include: [
         {
