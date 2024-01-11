@@ -278,25 +278,25 @@ class TaskRepository {
   }
 
   async getTasksCreationByDayCount(userId: number): Promise<ITasksPerDay[]> {
-    const result: ITasksPerDay[] = await sequelize.query(
-      `
-      WITH DaysOfWeek AS (
-        SELECT 'Sunday' AS dayOfWeek
-        UNION SELECT 'Monday' UNION SELECT 'Tuesday' UNION SELECT 'Wednesday'
-        UNION SELECT 'Thursday' UNION SELECT 'Friday' UNION SELECT 'Saturday'
-      )
-      SELECT
-        DaysOfWeek.dayOfWeek,
-        COUNT(tasks.id) AS taskCount
-      FROM DaysOfWeek 
-      LEFT JOIN tasks ON DaysOfWeek.dayOfWeek = DAYNAME(tasks.created_at) AND tasks.user_id = :userId AND tasks.deleted_at IS NULL
-      GROUP BY DaysOfWeek.dayOfWeek;
-      `,
-      {
-        replacements: { userId: userId },
-        type: QueryTypes.SELECT,
-      }
-    );
+    const tasksByDayOfWeek = await Task.findAll({
+      attributes: [
+        [Sequelize.fn("DAYNAME", Sequelize.col("created_at")), "dayOfWeek"],
+        [Sequelize.fn("COUNT", Sequelize.col("id")), "taskCount"],
+      ],
+      where: {
+        user_id: userId,
+      },
+      group: [Sequelize.fn("DAYNAME", Sequelize.col("created_at"))],
+    });
+
+    let result: ITasksPerDay[] = tasksByDayOfWeek.map((item) => {
+      let taskPerDay: ITasksPerDay = {
+        dayOfWeek: item.getDataValue("dayOfWeek"),
+        taskCount: item.getDataValue("taskCount"),
+      };
+      return taskPerDay;
+    });
+
     return result;
   }
 }
