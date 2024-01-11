@@ -178,20 +178,34 @@ class TaskRepository {
   }
 
   async getTasksCount(userId: number): Promise<ITaskCount> {
-    const [result]: ITaskCount[] = await sequelize.query(
-      `
-        SELECT
-          COUNT(*) AS totalTasks,
-          CAST(SUM(CASE WHEN is_completed = 1 THEN 1 ELSE 0 END) AS SIGNED) AS completedTasks,
-          CAST(SUM(CASE WHEN is_completed = 0 THEN 1 ELSE 0 END) AS SIGNED) AS remainingTasks
-        FROM tasks
-        WHERE user_id = :userId AND deleted_at IS NULL
-      `,
-      {
-        replacements: { userId: userId },
-        type: QueryTypes.SELECT,
-      }
-    );
+    const taskCounts = await Task.findOne({
+      attributes: [
+        [Sequelize.fn("COUNT", Sequelize.col("*")), "totalTasks"],
+        [
+          Sequelize.fn(
+            "SUM",
+            Sequelize.fn("IF", Sequelize.literal("is_completed = 1"), 1, 0)
+          ),
+          "completedTasks",
+        ],
+        [
+          Sequelize.fn(
+            "SUM",
+            Sequelize.fn("IF", Sequelize.literal("is_completed = 0"), 1, 0)
+          ),
+          "remainingTasks",
+        ],
+      ],
+      where: {
+        user_id: userId,
+        deleted_at: null,
+      },
+    });
+    let result: ITaskCount = {
+      totalTasks: Number(taskCounts?.getDataValue("totalTasks")),
+      completedTasks: Number(taskCounts?.getDataValue("completedTasks")),
+      remainingTasks: Number(taskCounts?.getDataValue("remainingTasks")),
+    };
     return result;
   }
 
