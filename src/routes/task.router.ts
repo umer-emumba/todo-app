@@ -15,4 +15,5 @@ router.put("/:id", jwtAuth, taskController.updateTask);
 router.patch("/:id/completed", jwtAuth, taskController.markTaskCompleted);
 router.get("/:id", jwtAuth, taskController.getTaskDetails);
 router.delete("/:id", jwtAuth, taskController.deleteTask);
+router.get("/:id/similar_tasks", jwtAuth, taskController.getSimilarTasks);
 export default router;

@@ -91,5 +91,17 @@ class TaskService {
     await taskRepository.destroy(taskId);
     return DELETED_SUCCESSFULLY("Task");
   }
+
+  async getSimilarTasks(userId: number, taskId: number): Promise<Task[]> {
+    const task = await taskRepository.findById(taskId);
+    if (!task) {
+      throw new BadRequestError(NOT_FOUND_ERROR("Task"));
+    }
+    if (task.user_id !== userId) {
+      throw new BadRequestError(NOT_FOUND_ERROR("Task"));
+    }
+    const tasks = await taskRepository.findSimilarTasks(task);
+    return tasks;
+  }
 }
 export default new TaskService();

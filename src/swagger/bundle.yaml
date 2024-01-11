@@ -10,6 +10,10 @@ schemes:
 tags:
   - name: auth
     description: authentication apis
+  - name: task
+    description: tasks apis
+  - name: reports
+    description: reports apis
 securityDefinitions:
   bearerAuth:
     type: apiKey
@@ -168,6 +172,40 @@ definitions:
       - title
       - description
       - due_at
+  TaskCountReport:
+    type: object
+    properties:
+      totalTasks:
+        type: integer
+      completedTasks:
+        type: integer
+      remainingTasks:
+        type: integer
+  TaskDailyAverageReport:
+    type: object
+    properties:
+      averageCompletedTasksPerDay:
+        type: integer
+  OverDueTaskCountReport:
+    type: object
+    properties:
+      overdueTaskCount:
+        type: integer
+  MaxTaskCompletionDateReport:
+    type: object
+    properties:
+      maxTaskCompletionDate:
+        type: string
+        formate: date
+      completedTasksCount:
+        type: integer
+  TasksCreationByDateReport:
+    type: object
+    properties:
+      dayOfWeek:
+        type: string
+      taskCount:
+        type: integer
 parameters:
   limitParam:
     in: query
@@ -613,6 +651,212 @@ paths:
           description: task updated
           schema:
             $ref: '#definitions/Success'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /tasks/{id}/similar_tasks:
+    get:
+      summary: 'get similar tasks '
+      tags:
+        - task
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/parameters/idParam'
+      responses:
+        '200':
+          description: similar task listings
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                type: array
+                items:
+                  $ref: '#/definitions/Task'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /reports/tasks_count:
+    get:
+      summary: get total,complete,incomplete tasks
+      tags:
+        - reports
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: tasks count
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                $ref: '#/definitions/TaskCountReport'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /reports/daily_task_avg:
+    get:
+      summary: get average of task completed per day
+      tags:
+        - reports
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: get average of daily completed tasks
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                $ref: '#/definitions/TaskDailyAverageReport'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /reports/over_due_tasks:
+    get:
+      summary: Provide a count of tasks that couldn't be completed on time.
+      tags:
+        - reports
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Provide a count of tasks that couldn't be completed on time.
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                $ref: '#/definitions/OverDueTaskCountReport'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /reports/max_task_completion_date:
+    get:
+      summary: >-
+        Identify and expose the date on which the maximum number of tasks were
+        completed
+      tags:
+        - reports
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: >-
+            Identify and expose the date on which the maximum number of tasks
+            were completed
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                $ref: '#/definitions/MaxTaskCompletionDateReport'
+        '400':
+          description: Bad request
+          schema:
+            $ref: '#/definitions/Error'
+        '401':
+          description: unauthorized request
+          schema:
+            $ref: '#/definitions/Error'
+        '403':
+          description: Forbidden request
+          schema:
+            $ref: '#/definitions/Error'
+        '500':
+          description: internal server error
+          schema:
+            $ref: '#/definitions/Error'
+  /reports/tasks_creation_by_weekday:
+    get:
+      summary: count of Tasks Created by Day of the Week
+      tags:
+        - reports
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: ' how many tasks are created on every day of the week'
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+              data:
+                $ref: '#/definitions/TasksCreationByDateReport'
         '400':
           description: Bad request
           schema:

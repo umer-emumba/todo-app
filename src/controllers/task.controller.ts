@@ -55,5 +55,12 @@ class TaskController {
     const message = await taskService.deleteTask(user.id, Number(id));
     return sendSuccessResponse(res, 200, { message });
   }
+
+  async getSimilarTasks(req: Request, res: Response): Promise<void> {
+    const user = req.user;
+    const { id } = req.params;
+    const tasks = await taskService.getSimilarTasks(user.id, Number(id));
+    return sendSuccessResponse(res, 200, tasks);
+  }
 }
 export default new TaskController();

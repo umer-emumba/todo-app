@@ -1,0 +1,32 @@
+get:
+  summary: "count of Tasks Created by Day of the Week"
+  tags:
+    - reports
+  security:
+    - bearerAuth: []
+  responses:
+    200:
+      description: " how many tasks are created on every day of the week"
+      schema:
+        type: object
+        properties:
+          success:
+            type: boolean
+          data:
+            $ref: "#/definitions/TasksCreationByDateReport"
+    400:
+      description: "Bad request"
+      schema:
+        $ref: "#/definitions/Error"
+    401:
+      description: "unauthorized request"
+      schema:
+        $ref: "#/definitions/Error"
+    403:
+      description: "Forbidden request"
+      schema:
+        $ref: "#/definitions/Error"
+    500:
+      description: "internal server error"
+      schema:
+        $ref: "#/definitions/Error"

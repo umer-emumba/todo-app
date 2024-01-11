@@ -1,0 +1,32 @@
+get:
+  summary: "Provide a count of tasks that couldn't be completed on time."
+  tags:
+    - reports
+  security:
+    - bearerAuth: []
+  responses:
+    200:
+      description: "Provide a count of tasks that couldn't be completed on time."
+      schema:
+        type: object
+        properties:
+          success:
+            type: boolean
+          data:
+            $ref: "#/definitions/OverDueTaskCountReport"
+    400:
+      description: "Bad request"
+      schema:
+        $ref: "#/definitions/Error"
+    401:
+      description: "unauthorized request"
+      schema:
+        $ref: "#/definitions/Error"
+    403:
+      description: "Forbidden request"
+      schema:
+        $ref: "#/definitions/Error"
+    500:
+      description: "internal server error"
+      schema:
+        $ref: "#/definitions/Error"
