@@ -20,6 +20,7 @@ import Task from "./task.model";
   timestamps: true,
   underscored: true,
   tableName: "users",
+  paranoid: true,
 })
 export default class User extends Model {
   @Length({ max: 255 })
