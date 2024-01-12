@@ -8,7 +8,7 @@ export const DATABASE_CONNECTION_FAILED: string =
   "Unable to connect to the database";
 export const SWAGGER_SPECS_PATH: string = path.join(
   __dirname,
-  "./../swagger/bundle.yaml"
+  "./../../swagger/bundle.yaml"
 );
 export const CREATED_SUCCESSFULLY = (item: string) =>
   `${item} created successfully`;
