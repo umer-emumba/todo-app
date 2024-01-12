@@ -1,6 +1,9 @@
 /node_modules
 /dist
+.env.development
+.env.production
 .env
+.env.test
 package-lock.json
 /logs
 firebase-service-account.json

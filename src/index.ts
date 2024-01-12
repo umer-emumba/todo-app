@@ -1,12 +1,9 @@
 import app from "./app";
 import { cronService } from "./services";
-import config from "./utils/config";
 import cluster from "cluster";
 import os from "os";
 
 const numCPUs = os.cpus().length;
-
-const PORT = config.port || 3000;
 
 if (cluster.isPrimary) {
   console.log(`Primary ${process.pid} is running`);
@@ -23,7 +20,11 @@ if (cluster.isPrimary) {
   });
 } else {
   // Code to run the Express app in each worker
-  app.listen(PORT, () => {
-    console.log(`Worker ${process.pid} started, listening on port ${PORT}`);
+  app.listen(app.get("config").port, () => {
+    console.log(
+      `Worker ${process.pid} started, listening on port ${
+        app.get("config").port
+      }`
+    );
   });
 }

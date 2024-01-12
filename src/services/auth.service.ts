@@ -104,7 +104,7 @@ class AuthService {
 
   async signin(dto: LoginDto): Promise<ILoginResponse> {
     const user = await userRepository.findByEmailUnscoped(dto.email);
-    if (!user) {
+    if (!user || user.social_media_token) {
       throw new UnauthorizedError(INVALID_CREDENTIALS);
     }
 

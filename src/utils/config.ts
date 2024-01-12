@@ -1,4 +1,10 @@
+import dotenv from "dotenv";
 import { IAppConfig } from "../interfaces";
+import path from "path";
+
+const environment = process.env.NODE_ENV || "development";
+const envFilePath = path.join(__dirname, `../../.env.${environment}`);
+dotenv.config({ path: envFilePath });
 
 const config: IAppConfig = {
   port: process.env.PORT ? parseInt(process.env.PORT) : 3000,

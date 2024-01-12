@@ -1,4 +1,3 @@
-import "dotenv/config";
 import express, { Application } from "express";
 import cors from "cors";
 import sequelize from "./models/connection";
@@ -18,6 +17,7 @@ import {
   SWAGGER_SPECS_PATH,
   logger,
   handleValidationErrors,
+  config,
 } from "./utils";
 import { QueueService } from "./services";
 import { QueuesEnum } from "./interfaces";
@@ -28,6 +28,7 @@ class App {
 
   constructor() {
     this.app = express();
+    this.app.set("config", config);
     this.config();
     this.databaseSetup();
     this.prepareDocsAndSetupValidator();
