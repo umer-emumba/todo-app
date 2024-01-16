@@ -229,7 +229,7 @@ class TaskRepository {
     let maxDate = dayjs(result?.getDataValue("max_date"));
     let minDate = dayjs(result?.getDataValue("min_date"));
     let average: IAverageTaskCompleted = {
-      averageCompletedTasksPerDay: totalRows / maxDate.diff(minDate, "d"),
+      averageCompletedTasksPerDay: totalRows / (maxDate.diff(minDate, "d") + 1),
     };
 
     return average;
