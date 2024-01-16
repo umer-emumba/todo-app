@@ -1,13 +1,20 @@
 import { Request, Response } from "express";
-import { extractFileTypeFromMime, sendSuccessResponse } from "../utils";
+import {
+  createAndValidateDto,
+  extractFileTypeFromMime,
+  sendSuccessResponse,
+} from "../utils";
 import { CreateTaskDto, PaginationDto, UpdateTaskDto } from "../interfaces";
-import { plainToClass } from "class-transformer";
+
 import { taskService } from "../services";
 
 class TaskController {
   async addTask(req: Request, res: Response): Promise<void> {
     const user = req.user;
-    const dto: CreateTaskDto = plainToClass(CreateTaskDto, req.body);
+    const dto: CreateTaskDto = await createAndValidateDto(
+      CreateTaskDto,
+      req.body
+    );
     dto.task_attachments = (req.files as Express.Multer.File[]).map((file) => ({
       attachment_url: `uploads/${file.filename}`,
       attachment_type: extractFileTypeFromMime(file.mimetype),
@@ -20,7 +27,10 @@ class TaskController {
   async updateTask(req: Request, res: Response): Promise<void> {
     const user = req.user;
     const { id } = req.params;
-    const dto: UpdateTaskDto = plainToClass(UpdateTaskDto, req.body);
+    const dto: UpdateTaskDto = await createAndValidateDto(
+      UpdateTaskDto,
+      req.body
+    );
 
     const message = await taskService.updateTask(user.id, Number(id), dto);
     return sendSuccessResponse(res, 200, { message });
@@ -36,7 +46,10 @@ class TaskController {
 
   async getTasks(req: Request, res: Response): Promise<void> {
     const user = req.user;
-    const dto: PaginationDto = plainToClass(PaginationDto, req.query);
+    const dto: PaginationDto = await createAndValidateDto(
+      PaginationDto,
+      req.query
+    );
     const tasks = await taskService.getTasks(user.id, dto);
 
     return sendSuccessResponse(res, 200, tasks);

@@ -50,3 +50,5 @@ export const REMINDER_EMAIL_BODY = (title: string) => `
 <p>Hi, <strong>${title}</strong> task is due today</p>
 
 `;
+
+export const REQUESTED_RESOURCE_NOT_FOUND: string = `Requested resource not found`;

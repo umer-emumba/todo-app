@@ -28,3 +28,10 @@ export class ForbiddenError extends CustomError {
     this.name = "ForbiddenError";
   }
 }
+
+export class NotFoundError extends CustomError {
+  constructor(message: string) {
+    super(404, message);
+    this.name = "NotFoundError";
+  }
+}

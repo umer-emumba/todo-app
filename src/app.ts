@@ -1,4 +1,4 @@
-import express, { Application } from "express";
+import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import sequelize from "./models/connection";
 import helmet from "helmet";
@@ -18,6 +18,8 @@ import {
   logger,
   handleValidationErrors,
   config,
+  NotFoundError,
+  REQUESTED_RESOURCE_NOT_FOUND,
 } from "./utils";
 import { QueueService } from "./services";
 import { QueuesEnum } from "./interfaces";
@@ -82,6 +84,9 @@ class App {
     this.app.use("/api/auth", authRouter);
     this.app.use("/api/tasks", taskRouter);
     this.app.use("/api/reports", reportRouter);
+    this.app.use("/", (req: Request, res: Response) => {
+      throw new NotFoundError(REQUESTED_RESOURCE_NOT_FOUND);
+    });
   }
 
   private errorMiddleware(): void {

@@ -1,4 +1,4 @@
-export interface IPaginatedResponse<T> {
+export interface IPaginatedResponse<Model> {
   count: number;
-  rows: T[];
+  rows: Model[];
 }
