@@ -3,11 +3,14 @@ import jwt from "jsonwebtoken";
 import config from "./config";
 import {
   AttachmentType,
+  BaseDto,
   IMailOptions,
   SocialMediaPlatform,
 } from "../interfaces";
-import { firebaseAdmin, mailer } from ".";
+import { BadRequestError, firebaseAdmin, mailer } from ".";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
+import { plainToClass } from "class-transformer";
+import { ValidationError, validate } from "class-validator";
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -100,4 +103,29 @@ export const extractFileTypeFromMime = (mimeType: string): AttachmentType => {
   } else {
     return AttachmentType.IMAGE;
   }
+};
+
+export const createAndValidateDto = async <T extends BaseDto>(
+  dtoClass: new () => T,
+  dtoData: object
+): Promise<T> => {
+  const dtoInstance = plainToClass(dtoClass, dtoData);
+  const errors: ValidationError[] = await validate(dtoInstance, {
+    whitelist: true,
+  });
+  if (errors.length > 0) {
+    const errorMessages: string[] = [];
+
+    errors.forEach((error) => {
+      if (error.constraints) {
+        Object.values(error.constraints).forEach((constraint) => {
+          errorMessages.push(constraint);
+        });
+      }
+    });
+
+    throw new BadRequestError(errorMessages.join(", "));
+  }
+
+  return dtoInstance;
 };

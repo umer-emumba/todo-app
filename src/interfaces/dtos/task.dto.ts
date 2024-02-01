@@ -1,14 +1,47 @@
+import { Transform } from "class-transformer";
+import {
+  IsDate,
+  IsEnum,
+  IsISO8601,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  ValidateNested,
+} from "class-validator";
+
 export class CreateTaskDto {
-  declare title: string;
-  declare description: string;
-  declare due_at: Date;
-  declare task_attachments?: Attachment[];
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(50)
+  title!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(255)
+  description!: string;
+
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  due_at!: Date;
+
+  @IsOptional()
+  @ValidateNested()
+  task_attachments?: Attachment[];
 }
 
 export class UpdateTaskDto {
-  declare title: string;
-  declare description: string;
-  declare due_at: Date;
+  @IsNotEmpty()
+  @IsString()
+  title!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  description!: string;
+
+  @IsDate()
+  @Transform(({ value }) => new Date(value))
+  due_at!: Date;
 }
 
 export enum AttachmentType {
@@ -18,7 +51,11 @@ export enum AttachmentType {
   DOC = "DOC",
 }
 
-class Attachment {
-  declare attachment_url: string;
-  declare attachment_type: AttachmentType;
+export class Attachment {
+  @IsNotEmpty()
+  @IsString()
+  attachment_url!: string;
+
+  @IsEnum(AttachmentType)
+  attachment_type!: AttachmentType;
 }

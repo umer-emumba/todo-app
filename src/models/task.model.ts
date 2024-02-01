@@ -17,6 +17,7 @@ import TaskAttachment from "./taskAttachment.model";
   timestamps: true,
   underscored: true,
   tableName: "tasks",
+  paranoid: true,
 })
 export default class Task extends Model {
   @Length({ max: 255 })

@@ -20,6 +20,11 @@ interface IJWTConfig {
   refreshTokenExpiry: number;
 }
 
+interface IRedisConfig {
+  host: string;
+  port: number;
+}
+
 export interface IAppConfig {
   port: number;
   db: IDatabaseConfig;
@@ -27,4 +32,5 @@ export interface IAppConfig {
   jwt: IJWTConfig;
   frontendUrl: string;
   maxTaskCount: number;
+  redis: IRedisConfig;
 }

@@ -10,10 +10,11 @@ import {
   PaginationDto,
   UpdateTaskDto,
 } from "../interfaces";
-import { Task, TaskAttachment } from "../models";
+import { Task, TaskAttachment, User } from "../models";
 import { Op } from "sequelize";
 import { Sequelize } from "sequelize-typescript";
 import sequelize from "../models/connection";
+import dayjs from "dayjs";
 
 class TaskRepository {
   async countById(userId: number): Promise<number> {
@@ -156,46 +157,82 @@ class TaskRepository {
     return similarTasks;
   }
 
+  async getTodayTasks(): Promise<Task[]> {
+    return Task.findAll({
+      attributes: ["id", "title"],
+      where: {
+        [Op.and]: [
+          Sequelize.where(
+            Sequelize.fn("DATE", Sequelize.col("due_at")),
+            "=",
+            Sequelize.fn("CURDATE")
+          ),
+        ],
+      },
+      include: [
+        {
+          model: User,
+          attributes: ["id", "email"],
+        },
+      ],
+    });
+  }
+
   async getTasksCount(userId: number): Promise<ITaskCount> {
-    const [result]: ITaskCount[] = await sequelize.query(
-      `
-        SELECT
-          COUNT(*) AS totalTasks,
-          CAST(SUM(CASE WHEN is_completed = 1 THEN 1 ELSE 0 END) AS SIGNED) AS completedTasks,
-          CAST(SUM(CASE WHEN is_completed = 0 THEN 1 ELSE 0 END) AS SIGNED) AS remainingTasks
-        FROM tasks
-        WHERE user_id = :userId
-      `,
-      {
-        replacements: { userId: userId },
-        type: QueryTypes.SELECT,
-      }
-    );
+    const taskCounts = await Task.findOne({
+      attributes: [
+        [Sequelize.fn("COUNT", Sequelize.col("*")), "totalTasks"],
+        [
+          Sequelize.fn(
+            "SUM",
+            Sequelize.fn("IF", Sequelize.literal("is_completed = 1"), 1, 0)
+          ),
+          "completedTasks",
+        ],
+        [
+          Sequelize.fn(
+            "SUM",
+            Sequelize.fn("IF", Sequelize.literal("is_completed = 0"), 1, 0)
+          ),
+          "remainingTasks",
+        ],
+      ],
+      where: {
+        user_id: userId,
+        deleted_at: null,
+      },
+    });
+    let result: ITaskCount = {
+      totalTasks: Number(taskCounts?.getDataValue("totalTasks")),
+      completedTasks: Number(taskCounts?.getDataValue("completedTasks")),
+      remainingTasks: Number(taskCounts?.getDataValue("remainingTasks")),
+    };
     return result;
   }
 
   async averageCompletedTasksPerDay(
     userId: number
   ): Promise<IAverageTaskCompleted> {
-    const [result]: IAverageTaskCompleted[] = await sequelize.query(
-      `
-      SELECT
-        CAST(
-          ROUND( 
-            COUNT(*) / (DATEDIFF(MAX(created_at), MIN(created_at)) + 1)
-          ) AS SIGNED
-        ) AS averageCompletedTasksPerDay
-        FROM tasks
-        WHERE user_id = :userId
-          AND is_completed = 1
-      `,
-      {
-        replacements: { userId: userId },
-        type: QueryTypes.SELECT,
-      }
-    );
+    const result = await Task.findOne({
+      attributes: [
+        [Sequelize.fn("COUNT", Sequelize.col("id")), "total"],
+        [Sequelize.fn("MAX", sequelize.col("created_at")), "max_date"],
+        [Sequelize.fn("MIN", sequelize.col("created_at")), "min_date"],
+      ],
+      where: {
+        user_id: userId,
+        is_completed: 1,
+        deleted_at: null,
+      },
+    });
+    let totalRows = result?.getDataValue("total");
+    let maxDate = dayjs(result?.getDataValue("max_date"));
+    let minDate = dayjs(result?.getDataValue("min_date"));
+    let average: IAverageTaskCompleted = {
+      averageCompletedTasksPerDay: totalRows / (maxDate.diff(minDate, "d") + 1),
+    };
 
-    return result;
+    return average;
   }
 
   async getOverDueTasksCount(userId: number): Promise<IOverDueTaskCount> {
@@ -203,7 +240,7 @@ class TaskRepository {
       where: {
         user_id: userId,
         is_completed: 0,
-        due_at: { [Op.lt]: Sequelize.literal("CURRENT_DATE") },
+        due_at: { [Op.lt]: new Date() },
       },
     });
 
@@ -217,47 +254,49 @@ class TaskRepository {
   async getMaxTaskCompletionDate(
     userId: number
   ): Promise<IMaxTaskCompletionDate> {
-    const [result]: IMaxTaskCompletionDate[] = await sequelize.query(
-      `
-      SELECT
-        DATE(completed_at) AS maxTaskCompletionDate,
-        COUNT(*) AS completedTasksCount
-      FROM tasks
-      WHERE user_id = :userId
-        AND is_completed = 1
-      GROUP BY maxTaskCompletionDate
-      ORDER BY completedTasksCount DESC
-      LIMIT 1;
-      `,
-      {
-        replacements: { userId: userId },
-        type: QueryTypes.SELECT,
-      }
-    );
-
+    const query = await Task.findOne({
+      attributes: [
+        [
+          Sequelize.fn("DATE", Sequelize.col("created_at")),
+          "maxTaskCompletionDate",
+        ],
+        [Sequelize.fn("COUNT", Sequelize.col("id")), "completedTasksCount"],
+      ],
+      where: {
+        user_id: userId,
+        is_completed: 1,
+      },
+      group: [Sequelize.fn("DATE", Sequelize.col("created_at"))],
+      order: [[Sequelize.fn("COUNT", Sequelize.col("id")), "DESC"]],
+      limit: 1,
+    });
+    let result: IMaxTaskCompletionDate = {
+      completedTasksCount: query?.getDataValue("completedTasksCount"),
+      maxTaskCompletionDate: query?.getDataValue("maxTaskCompletionDate"),
+    };
     return result;
   }
 
   async getTasksCreationByDayCount(userId: number): Promise<ITasksPerDay[]> {
-    const result: ITasksPerDay[] = await sequelize.query(
-      `
-      WITH DaysOfWeek AS (
-        SELECT 'Sunday' AS dayOfWeek
-        UNION SELECT 'Monday' UNION SELECT 'Tuesday' UNION SELECT 'Wednesday'
-        UNION SELECT 'Thursday' UNION SELECT 'Friday' UNION SELECT 'Saturday'
-      )
-      SELECT
-        DaysOfWeek.dayOfWeek,
-        COUNT(tasks.id) AS taskCount
-      FROM DaysOfWeek
-      LEFT JOIN tasks ON DaysOfWeek.dayOfWeek = DAYNAME(tasks.created_at) AND tasks.user_id = :userId
-      GROUP BY DaysOfWeek.dayOfWeek;
-      `,
-      {
-        replacements: { userId: userId },
-        type: QueryTypes.SELECT,
-      }
-    );
+    const tasksByDayOfWeek = await Task.findAll({
+      attributes: [
+        [Sequelize.fn("DAYNAME", Sequelize.col("created_at")), "dayOfWeek"],
+        [Sequelize.fn("COUNT", Sequelize.col("id")), "taskCount"],
+      ],
+      where: {
+        user_id: userId,
+      },
+      group: [Sequelize.fn("DAYNAME", Sequelize.col("created_at"))],
+    });
+
+    let result: ITasksPerDay[] = tasksByDayOfWeek.map((item) => {
+      let taskPerDay: ITasksPerDay = {
+        dayOfWeek: item.getDataValue("dayOfWeek"),
+        taskCount: item.getDataValue("taskCount"),
+      };
+      return taskPerDay;
+    });
+
     return result;
   }
 }

@@ -8,7 +8,7 @@ const sequelize = new Sequelize({
   username: config.db.user,
   password: config.db.password,
   port: config.db.port,
-  models: [__dirname + "/*.model.ts"],
+  models: [__dirname + "/*.model.*"],
   logging: (sql: string) => {
     logger.info(`Executed Query on ${new Date()}: ${sql}`);
     console.log(`Executed Query on ${new Date()}: ${sql}`);

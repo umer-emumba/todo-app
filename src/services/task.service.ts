@@ -2,6 +2,7 @@ import {
   CreateTaskDto,
   IPaginatedResponse,
   PaginationDto,
+  UpdateTaskDto,
 } from "../interfaces";
 import { Task } from "../models";
 import { taskRepository } from "../repositories";
@@ -29,7 +30,7 @@ class TaskService {
   async updateTask(
     userId: number,
     taskId: number,
-    dto: CreateTaskDto
+    dto: UpdateTaskDto
   ): Promise<string> {
     const task = await taskRepository.findById(taskId);
     if (!task) {
