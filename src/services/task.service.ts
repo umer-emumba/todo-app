@@ -4,7 +4,7 @@ import {
   PaginationDto,
   UpdateTaskDto,
 } from "../interfaces";
-import { Task } from "../models";
+import { Task, TaskAttachment } from "../models";
 import { taskRepository } from "../repositories";
 import {
   BadRequestError,
@@ -23,7 +23,10 @@ class TaskService {
     if (taskCount >= config.maxTaskCount) {
       throw new BadRequestError(TASK_LIMIT_EXCEEDED);
     }
-    await taskRepository.create(userId, dto);
+    await taskRepository.create(
+      { ...dto, user_id: userId },
+      { include: [{ model: TaskAttachment }] }
+    );
     return CREATED_SUCCESSFULLY("Task");
   }
 
@@ -39,7 +42,12 @@ class TaskService {
     if (task.user_id !== userId) {
       throw new BadRequestError(NOT_FOUND_ERROR("Task"));
     }
-    await taskRepository.update(taskId, dto);
+    await taskRepository.update(
+      {
+        id: taskId,
+      },
+      dto
+    );
     return UPDATED_SUCCESSFULLY("Task");
   }
 
@@ -89,7 +97,7 @@ class TaskService {
     if (task.user_id !== userId) {
       throw new BadRequestError(NOT_FOUND_ERROR("Task"));
     }
-    await taskRepository.destroy(taskId);
+    await taskRepository.delete({ id: taskId });
     return DELETED_SUCCESSFULLY("Task");
   }
 
