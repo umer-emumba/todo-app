@@ -11,6 +11,9 @@ import { BadRequestError, firebaseAdmin, mailer } from ".";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { plainToClass } from "class-transformer";
 import { ValidationError, validate } from "class-validator";
+import * as ejs from "ejs";
+import * as fs from "fs/promises";
+import path from "path";
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -129,3 +132,65 @@ export const createAndValidateDto = async <T extends BaseDto>(
 
   return dtoInstance;
 };
+
+export const createAndSaveTemplate = async (html: string): Promise<string> => {
+  const variableNames = extractVariableNames(html);
+  const dynamicData = assignRandomValues(variableNames);
+
+  // Render the template with the data
+  const renderedTemplate = ejs.render(html, dynamicData);
+  const filePath = `/templates/${Date.now()}-template.html`;
+
+  // Path to the new EJS file
+  const ejsFilePath = `./public/${filePath}`;
+
+  // Ensure the directory exists
+  const directory = path.dirname(ejsFilePath);
+  await fs.mkdir(directory, { recursive: true });
+
+  await fs.writeFile(ejsFilePath, renderedTemplate);
+  return filePath;
+};
+
+// Function to extract variable names from the template
+function extractVariableNames(templateContent: string): string[] {
+  const regex = /<%=\s*([^%>]+)\s*%>/g;
+  const matches = templateContent.match(regex);
+  if (!matches) return [];
+  return matches.map((match) => match.replace(/<%=\s*|\s*%>/g, ""));
+}
+
+// Function to assign random values to variables
+function assignRandomValues(variableNames: string[]): Record<string, any> {
+  const dynamicData: Record<string, any> = {};
+  variableNames.forEach((variableName) => {
+    dynamicData[variableName] = getRandomValue();
+  });
+  return dynamicData;
+}
+
+// Function to generate a random value
+function getRandomValue(): string | number {
+  const types = ["string", "number"];
+  const selectedType = types[Math.floor(Math.random() * types.length)];
+
+  switch (selectedType) {
+    case "string":
+      return getRandomString();
+    case "number":
+      return getRandomNumber();
+
+    default:
+      return getRandomString();
+  }
+}
+
+// Function to generate a random string
+function getRandomString(): string {
+  return Math.random().toString(36).substring(7);
+}
+
+// Function to generate a random number between 1 and 100
+function getRandomNumber(): number {
+  return Math.floor(Math.random() * 100) + 1;
+}

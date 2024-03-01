@@ -2,6 +2,7 @@ import {
   CreateTaskDto,
   IPaginatedResponse,
   PaginationDto,
+  TaskType,
   UpdateTaskDto,
 } from "../interfaces";
 import { Task, TaskAttachment } from "../models";
@@ -15,6 +16,7 @@ import {
   TASK_LIMIT_EXCEEDED,
   UPDATED_SUCCESSFULLY,
   config,
+  createAndSaveTemplate,
 } from "../utils";
 
 class TaskService {
@@ -23,8 +25,15 @@ class TaskService {
     if (taskCount >= config.maxTaskCount) {
       throw new BadRequestError(TASK_LIMIT_EXCEEDED);
     }
+
+    let templateUrl: string = "";
+
+    if (dto.task_type === TaskType.HTML) {
+      templateUrl = await createAndSaveTemplate(dto.html);
+    }
+
     await taskRepository.create(
-      { ...dto, user_id: userId },
+      { ...dto, user_id: userId, template_url: templateUrl },
       { include: [{ model: TaskAttachment }] }
     );
     return CREATED_SUCCESSFULLY("Task");
