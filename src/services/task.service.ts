@@ -51,11 +51,18 @@ class TaskService {
     if (task.user_id !== userId) {
       throw new BadRequestError(NOT_FOUND_ERROR("Task"));
     }
+
+    let templateUrl: string = "";
+
+    if (dto.task_type === TaskType.HTML) {
+      templateUrl = await createAndSaveTemplate(dto.html);
+    }
+
     await taskRepository.update(
       {
         id: taskId,
       },
-      dto
+      { ...dto, template_url: templateUrl }
     );
     return UPDATED_SUCCESSFULLY("Task");
   }

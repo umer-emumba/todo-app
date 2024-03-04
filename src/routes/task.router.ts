@@ -11,7 +11,7 @@ router.post(
   taskController.addTask
 );
 router.get("/", jwtAuth, taskController.getTasks);
-router.put("/:id", jwtAuth, taskController.updateTask);
+router.put("/:id", jwtAuth, multerUpload.none(), taskController.updateTask);
 router.patch("/:id/completed", jwtAuth, taskController.markTaskCompleted);
 router.get("/:id", jwtAuth, taskController.getTaskDetails);
 router.delete("/:id", jwtAuth, taskController.deleteTask);

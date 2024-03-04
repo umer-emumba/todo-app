@@ -58,14 +58,14 @@ class App {
       swaggerUi.setup(swaggerDocument)
     );
 
-    this.app.use(
-      SwaggerExpressValidator({
-        schema: swaggerDocument,
-        validateRequest: true,
-        validateResponse: false,
-        requestValidationFn: handleValidationErrors,
-      })
-    );
+    // this.app.use(
+    //   SwaggerExpressValidator({
+    //     schema: swaggerDocument,
+    //     validateRequest: true,
+    //     validateResponse: false,
+    //     requestValidationFn: handleValidationErrors,
+    //   })
+    // );
   }
 
   private databaseSetup(): void {
