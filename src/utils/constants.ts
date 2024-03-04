@@ -1,5 +1,6 @@
 import path from "path";
 import config from "./config";
+import { Task } from "../models";
 
 export const INTERNAL_SERVER_ERROR: string = "Internal Server Error";
 export const BAD_REQUEST_ERROR: string = "Bad Request";
@@ -52,3 +53,9 @@ export const REMINDER_EMAIL_BODY = (title: string) => `
 `;
 
 export const REQUESTED_RESOURCE_NOT_FOUND: string = `Requested resource not found`;
+export const TASK_ADDED_EMAIL_TITLE: string = `New Task Added`;
+export const TASK_ADDED_EMAIL_BODY = (task: Task) => `
+<p>Hi, You have added a new task at ${task.createdAt} which is due at ${task.due_at}</p>
+<p>You can checkout your task template at following link: <a href="http://localhost:${config.port}/${task.template_url}">View Template</a></p>
+
+`;

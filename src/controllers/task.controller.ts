@@ -20,7 +20,7 @@ class TaskController {
       attachment_type: extractFileTypeFromMime(file.mimetype),
     }));
 
-    const message = await taskService.addTask(user.id, dto);
+    const message = await taskService.addTask(user, dto);
     return sendSuccessResponse(res, 201, { message });
   }
 

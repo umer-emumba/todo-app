@@ -1,27 +1,33 @@
 import {
   CreateTaskDto,
+  IMailOptions,
   IPaginatedResponse,
+  JobTypeEnum,
   PaginationDto,
+  QueuesEnum,
   TaskType,
   UpdateTaskDto,
 } from "../interfaces";
-import { Task, TaskAttachment } from "../models";
+import { Task, TaskAttachment, User } from "../models";
 import { taskRepository } from "../repositories";
 import {
   BadRequestError,
   CREATED_SUCCESSFULLY,
   DELETED_SUCCESSFULLY,
   NOT_FOUND_ERROR,
+  TASK_ADDED_EMAIL_BODY,
+  TASK_ADDED_EMAIL_TITLE,
   TASK_ALREADY_COMPLETED,
   TASK_LIMIT_EXCEEDED,
   UPDATED_SUCCESSFULLY,
   config,
   createAndSaveTemplate,
 } from "../utils";
+import QueueService from "./queue.service";
 
 class TaskService {
-  async addTask(userId: number, dto: CreateTaskDto): Promise<string> {
-    const taskCount = await taskRepository.countById(userId);
+  async addTask(user: User, dto: CreateTaskDto): Promise<string> {
+    const taskCount = await taskRepository.countById(user.id);
     if (taskCount >= config.maxTaskCount) {
       throw new BadRequestError(TASK_LIMIT_EXCEEDED);
     }
@@ -32,10 +38,23 @@ class TaskService {
       templateUrl = await createAndSaveTemplate(dto.html);
     }
 
-    await taskRepository.create(
-      { ...dto, user_id: userId, template_url: templateUrl },
+    const task = await taskRepository.create(
+      { ...dto, user_id: user.id, template_url: templateUrl },
       { include: [{ model: TaskAttachment }] }
     );
+
+    if (task.task_type === TaskType.HTML) {
+      const mailOptions: IMailOptions = {
+        to: user.email,
+        subject: TASK_ADDED_EMAIL_TITLE,
+        html: TASK_ADDED_EMAIL_BODY(task),
+      };
+
+      const instance = new QueueService();
+      const queue = instance.getQueue(QueuesEnum.DEFAULT);
+      queue.add(JobTypeEnum.SEND_EMAIL, mailOptions);
+    }
+
     return CREATED_SUCCESSFULLY("Task");
   }
 
