@@ -4,6 +4,7 @@ import config from "./config";
 import {
   AttachmentType,
   BaseDto,
+  IGeneratePdfOptions,
   IMailOptions,
   SocialMediaPlatform,
 } from "../interfaces";
@@ -14,6 +15,7 @@ import { ValidationError, validate } from "class-validator";
 import * as ejs from "ejs";
 import * as fs from "fs/promises";
 import path from "path";
+import puppeteer from "puppeteer";
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -194,3 +196,24 @@ function getRandomString(): string {
 function getRandomNumber(): number {
   return Math.floor(Math.random() * 100) + 1;
 }
+
+export const convertHtmlToPdf = async (options: IGeneratePdfOptions) => {
+  const template = await fs.readFile(options.templatePath, "utf-8");
+
+  const browser = await puppeteer.launch();
+  const page = await browser.newPage();
+
+  await page.setContent(template);
+
+  // Create the output directory if it does not exist
+  const outputDir = path.dirname(options.outputPath);
+  try {
+    await fs.access(outputDir);
+  } catch (error) {
+    await fs.mkdir(outputDir, { recursive: true });
+  }
+
+  await page.pdf({ path: options.outputPath, format: "A4" });
+
+  await browser.close();
+};

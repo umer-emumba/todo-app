@@ -1,5 +1,6 @@
 import {
   CreateTaskDto,
+  IGeneratePdfOptions,
   IMailOptions,
   IPaginatedResponse,
   JobTypeEnum,
@@ -50,9 +51,15 @@ class TaskService {
         html: TASK_ADDED_EMAIL_BODY(task),
       };
 
+      const generatePdfOptions: IGeneratePdfOptions = {
+        templatePath: `./public${task.template_url}`,
+        outputPath: `./public/pdfs/task-${task.id}.pdf`,
+      };
+
       const instance = new QueueService();
       const queue = instance.getQueue(QueuesEnum.DEFAULT);
       queue.add(JobTypeEnum.SEND_EMAIL, mailOptions);
+      queue.add(JobTypeEnum.GENERATE_PDF, generatePdfOptions);
     }
 
     return CREATED_SUCCESSFULLY("Task");

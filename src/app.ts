@@ -34,8 +34,8 @@ class App {
     this.config();
     this.databaseSetup();
     this.prepareDocsAndSetupValidator();
-    this.routes();
     this.setupJobDashboard();
+    this.routes();
     this.errorMiddleware();
   }
 

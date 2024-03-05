@@ -40,6 +40,9 @@ export default class QueueService {
           case JobTypeEnum.SEND_EMAIL:
             await DefaultProcessor.sendJobEmail(job);
             break;
+          case JobTypeEnum.GENERATE_PDF:
+            await DefaultProcessor.generatePdf(job);
+            break;
         }
         logger.info("[DEFAULT QUEUE] Worker for default queue");
       },

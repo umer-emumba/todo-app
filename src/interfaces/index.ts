@@ -10,3 +10,4 @@ export * from "./IPaginatedResponse";
 export * from "./report.interfaces";
 export * from "./IBullMqOptions";
 export * from "./dtos/base.dto";
+export * from "./IGeneratePdfOptions";
