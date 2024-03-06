@@ -15,10 +15,14 @@ class TaskController {
       CreateTaskDto,
       req.body
     );
-    dto.task_attachments = (req.files as Express.Multer.File[]).map((file) => ({
-      attachment_url: `uploads/${file.filename}`,
-      attachment_type: extractFileTypeFromMime(file.mimetype),
-    }));
+    if (req.files && Array.isArray(req.files)) {
+      dto.task_attachments = (req.files as Express.Multer.File[]).map(
+        (file) => ({
+          attachment_url: `uploads/${file.filename}`,
+          attachment_type: extractFileTypeFromMime(file.mimetype),
+        })
+      );
+    }
 
     const message = await taskService.addTask(user, dto);
     return sendSuccessResponse(res, 201, { message });
