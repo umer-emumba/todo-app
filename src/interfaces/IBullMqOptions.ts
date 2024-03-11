@@ -1,3 +1,5 @@
+import { BackoffOptions } from "bullmq";
+
 export enum QueuesEnum {
   DEFAULT = "default",
 }
@@ -15,6 +17,8 @@ interface IRedisConnection {
 interface IDefaultOptions {
   removeOnComplete: boolean;
   removeOnFail: boolean;
+  attempts: number;
+  backoff: number | BackoffOptions;
 }
 
 export interface IBullMqOptions {
