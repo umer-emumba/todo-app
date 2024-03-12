@@ -9,6 +9,7 @@ import {
   QueuesEnum,
 } from "../interfaces";
 import { IJwtToken, TokenType, UserType } from "../interfaces/IJwtToken";
+import { UserSetting } from "../models";
 import { userRepository } from "../repositories";
 import {
   ACCONT_NOT_VERIFIED,
@@ -74,7 +75,16 @@ class AuthService {
 
     dto.password = await hashPassword(dto.password);
 
-    const user = await userRepository.create({ ...dto });
+    const user = await userRepository.create(
+      { ...dto, user_setting: {} },
+      {
+        include: [
+          {
+            model: UserSetting,
+          },
+        ],
+      }
+    );
     const payload: IJwtToken = {
       id: user.id,
       token_type: TokenType.EMAIL_VERIFICATION,

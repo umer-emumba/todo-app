@@ -11,7 +11,7 @@ import {
   HasMany,
 } from "sequelize-typescript";
 import User from "./user.model";
-import TaskAttachment from "./taskAttachment.model";
+import TaskAttachment from "./task-attachment.model";
 import { TaskType } from "../interfaces";
 
 @Table({
