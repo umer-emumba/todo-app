@@ -8,14 +8,16 @@ import {
   IMailOptions,
   SocialMediaPlatform,
 } from "../interfaces";
-import { BadRequestError, firebaseAdmin, mailer } from ".";
+import { BadRequestError, firebaseAdmin, logger, mailer } from ".";
 import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import { plainToClass } from "class-transformer";
 import { ValidationError, validate } from "class-validator";
 import * as ejs from "ejs";
 import * as fs from "fs/promises";
+import * as fileSystem from "fs";
 import path from "path";
 import puppeteer from "puppeteer";
+import PDFDocument from "pdfkit";
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -200,20 +202,16 @@ function getRandomNumber(): number {
 export const convertHtmlToPdf = async (options: IGeneratePdfOptions) => {
   const template = await fs.readFile(options.templatePath, "utf-8");
 
-  const browser = await puppeteer.launch();
-  const page = await browser.newPage();
+  const doc = new PDFDocument();
+  const stream = fileSystem.createWriteStream(options.outputPath);
+  doc.pipe(stream);
 
-  await page.setContent(template);
+  doc.font("Times-Roman").fontSize(12).text(template, {
+    align: "justify",
+  });
 
-  // Create the output directory if it does not exist
-  const outputDir = path.dirname(options.outputPath);
-  try {
-    await fs.access(outputDir);
-  } catch (error) {
-    await fs.mkdir(outputDir, { recursive: true });
-  }
-
-  await page.pdf({ path: options.outputPath, format: "A4" });
-
-  await browser.close();
+  doc.end();
+  stream.on("finish", () => {
+    logger.info("PDF created successfully");
+  });
 };
