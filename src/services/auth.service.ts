@@ -7,6 +7,7 @@ import {
   LoginDto,
   PasswordResetDto,
   QueuesEnum,
+  UserSettingDto,
 } from "../interfaces";
 import { IJwtToken, TokenType, UserType } from "../interfaces/IJwtToken";
 import { UserSetting } from "../models";
@@ -228,6 +229,18 @@ class AuthService {
     const user = await userRepository.socialLogin(socialLoginDto);
     const response = this.generateTokenForLogin(user.id);
     return response;
+  }
+
+  async getUserSetting(userId: number): Promise<UserSetting | null> {
+    return userRepository.getUserSetting(userId);
+  }
+
+  async updateUserSetting(
+    userId: number,
+    dto: UserSettingDto
+  ): Promise<string> {
+    await userRepository.updateUserSetting(userId, dto);
+    return UPDATED_SUCCESSFULLY("User Setting");
   }
 }
 

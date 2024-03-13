@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize-typescript";
-import { CreateUserDto, ISocialLogin } from "../interfaces";
-import { User } from "../models";
+import { CreateUserDto, ISocialLogin, UserSettingDto } from "../interfaces";
+import { User, UserSetting } from "../models";
 import sequelize from "../models/connection";
 import {
   ACCOUNT_ALREAD_EXIST_WITH_THIS_EMAIL,
@@ -59,6 +59,27 @@ class UserRepository extends BaseRepository<User> {
       });
       return user;
     }
+  }
+
+  async getUserSetting(userId: number): Promise<UserSetting | null> {
+    return UserSetting.findOne({
+      where: {
+        user_id: userId,
+      },
+    });
+  }
+
+  async updateUserSetting(userId: number, dto: UserSettingDto): Promise<void> {
+    await UserSetting.update(
+      {
+        ...dto,
+      },
+      {
+        where: {
+          user_id: userId,
+        },
+      }
+    );
   }
 }
 
