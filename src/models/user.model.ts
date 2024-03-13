@@ -30,6 +30,11 @@ export default class User extends Model {
   @Column(DataType.STRING)
   declare email: string;
 
+  @Length({ max: 25 })
+  @AllowNull
+  @Column(DataType.STRING)
+  declare phone: string;
+
   @Length({ max: 255 })
   @AllowNull
   @Column(DataType.STRING)

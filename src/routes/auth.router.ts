@@ -12,5 +12,7 @@ router.post("/reset_password", authController.resetPassword);
 router.post("/social_login", authController.socialLogin);
 router.get("/user_setting", jwtAuth, authController.getUserSetting);
 router.put("/user_setting", jwtAuth, authController.updateUserSetting);
+router.get("/profile", jwtAuth, authController.getProfile);
+router.put("/update_profile", jwtAuth, authController.updateProfile);
 
 export default router;

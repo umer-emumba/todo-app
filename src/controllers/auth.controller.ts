@@ -3,6 +3,7 @@ import {
   CreateUserDto,
   LoginDto,
   PasswordResetDto,
+  UpdateProfileDto,
   UserSettingDto,
 } from "../interfaces";
 import { authService } from "../services";
@@ -71,6 +72,21 @@ class AuthController {
     );
     const user = req.user;
     const message = await authService.updateUserSetting(user.id, dto);
+    return sendSuccessResponse(res, 200, { message });
+  }
+
+  async getProfile(req: Request, res: Response): Promise<void> {
+    const user = req.user;
+    return sendSuccessResponse(res, 200, user);
+  }
+
+  async updateProfile(req: Request, res: Response): Promise<void> {
+    const dto: UpdateProfileDto = await createAndValidateDto(
+      UpdateProfileDto,
+      req.body
+    );
+    const user = req.user;
+    const message = await authService.updateProfile(user.id, dto);
     return sendSuccessResponse(res, 200, { message });
   }
 }

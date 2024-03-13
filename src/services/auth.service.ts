@@ -7,6 +7,7 @@ import {
   LoginDto,
   PasswordResetDto,
   QueuesEnum,
+  UpdateProfileDto,
   UserSettingDto,
 } from "../interfaces";
 import { IJwtToken, TokenType, UserType } from "../interfaces/IJwtToken";
@@ -241,6 +242,18 @@ class AuthService {
   ): Promise<string> {
     await userRepository.updateUserSetting(userId, dto);
     return UPDATED_SUCCESSFULLY("User Setting");
+  }
+
+  async updateProfile(userId: number, dto: UpdateProfileDto): Promise<string> {
+    await userRepository.update(
+      {
+        id: userId,
+      },
+      {
+        ...dto,
+      }
+    );
+    return UPDATED_SUCCESSFULLY("Profile");
   }
 }
 
