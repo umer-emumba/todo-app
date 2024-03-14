@@ -8,12 +8,13 @@ const numCPUs = os.cpus().length;
 if (cluster.isPrimary) {
   console.log(`Primary ${process.pid} is running`);
 
-  // Fork workers
+  //   // Fork workers
   for (let i = 0; i < numCPUs; i++) {
     cluster.fork();
   }
-  //start email reminder cron service
+  //   //start email reminder cron service
   cronService.sendEmailReminders();
+  cronService.sendSMSNotifications();
 
   cluster.on("exit", (worker, code, signal) => {
     console.log(`Worker ${worker.process.pid} died`);

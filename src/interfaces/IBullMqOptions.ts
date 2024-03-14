@@ -7,6 +7,7 @@ export enum QueuesEnum {
 export enum JobTypeEnum {
   SEND_EMAIL = "send-email",
   GENERATE_PDF = "generate-pdf",
+  SEND_SMS = "send-sms",
 }
 
 interface IRedisConnection {

@@ -25,6 +25,12 @@ interface IRedisConfig {
   port: number;
 }
 
+interface ITwillioConfig {
+  sid: string;
+  token: string;
+  from: string;
+}
+
 export interface IAppConfig {
   port: number;
   db: IDatabaseConfig;
@@ -33,4 +39,6 @@ export interface IAppConfig {
   frontendUrl: string;
   maxTaskCount: number;
   redis: IRedisConfig;
+  twillio: ITwillioConfig;
+  tinyUrlToken: string;
 }

@@ -1,7 +1,7 @@
 import { Job } from "bullmq";
 import QueueService from "./queue.service";
 import { QueuesEnum } from "../interfaces";
-import { convertHtmlToPdf, logger, sendMail } from "../utils";
+import { convertHtmlToPdf, logger, sendMail, sendSMS } from "../utils";
 
 export default class DefaultProcessor {
   static async sendJobEmail(job: Job) {
@@ -18,6 +18,16 @@ export default class DefaultProcessor {
     const queue = new QueueService().getQueue(QueuesEnum.DEFAULT);
     if (!queue) return;
     await convertHtmlToPdf(job.data);
+    logger.info(
+      `Process job with id ${job.id} from the ${QueuesEnum.DEFAULT} queue`
+    );
+    return true;
+  }
+
+  static async sendSMSNotifications(job: Job) {
+    const queue = new QueueService().getQueue(QueuesEnum.DEFAULT);
+    if (!queue) return;
+    await sendSMS(job.data);
     logger.info(
       `Process job with id ${job.id} from the ${QueuesEnum.DEFAULT} queue`
     );

@@ -6,6 +6,7 @@ import {
   BaseDto,
   IGeneratePdfOptions,
   IMailOptions,
+  ISMSOptions,
   SocialMediaPlatform,
 } from "../interfaces";
 import { BadRequestError, firebaseAdmin, logger, mailer } from ".";
@@ -18,6 +19,7 @@ import * as fileSystem from "fs";
 import path from "path";
 import puppeteer from "puppeteer";
 import PDFDocument from "pdfkit";
+import twilio from "twilio";
 
 export const hashPassword = async (password: string): Promise<string> => {
   const saltRounds = 10;
@@ -214,4 +216,32 @@ export const convertHtmlToPdf = async (options: IGeneratePdfOptions) => {
   stream.on("finish", () => {
     logger.info("PDF created successfully");
   });
+};
+
+export const sendSMS = async (options: ISMSOptions) => {
+  const client = twilio(config.twillio.sid, config.twillio.token);
+  return await client.messages.create({
+    body: options.body,
+    from: config.twillio.from,
+    to: options.to,
+  });
+};
+
+export const createShortUrl = async (url: string): Promise<string> => {
+  const response = await fetch(
+    "https://api.tinyurl.com/create?api_token=" + config.tinyUrlToken,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        url: url,
+      }),
+    }
+  );
+
+  const data = await response.json();
+  console.log({ data });
+  return data.data.tiny_url;
 };

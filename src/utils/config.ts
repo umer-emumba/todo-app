@@ -35,6 +35,12 @@ const config: IAppConfig = {
     host: process.env.REDIS_HOST || "127.0.0.1",
     port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
   },
+  twillio: {
+    sid: process.env.TWILLIO_SID || "",
+    token: process.env.TWILLIO_TOKEN || "",
+    from: process.env.TWILLIO_FROM || "",
+  },
+  tinyUrlToken: process.env.TINY_URL_TOKEN || "",
 };
 
 export default config;
