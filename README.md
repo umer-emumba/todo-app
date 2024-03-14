@@ -13,7 +13,7 @@ Source code for the example REST API with Express, Typescript, Sequelize and mys
    npm install
    ```
 
-3. Setup .env.example to .env
+3. Setup .env.example to .env.development,.env.production or .env.test
 
    ```sh
    PORT=3000

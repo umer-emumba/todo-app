@@ -11,7 +11,8 @@ import {
   HasMany,
 } from "sequelize-typescript";
 import User from "./user.model";
-import TaskAttachment from "./taskAttachment.model";
+import TaskAttachment from "./task-attachment.model";
+import { TaskType } from "../interfaces";
 
 @Table({
   timestamps: true,
@@ -21,8 +22,14 @@ import TaskAttachment from "./taskAttachment.model";
 })
 export default class Task extends Model {
   @Length({ max: 255 })
+  @AllowNull
   @Column(DataType.STRING)
   declare title: string;
+
+  @Length({ max: 255 })
+  @AllowNull
+  @Column(DataType.STRING)
+  declare template_url: string;
 
   @Column(DataType.TEXT)
   declare description: string;
@@ -37,6 +44,10 @@ export default class Task extends Model {
   @Default(0)
   @Column(DataType.TINYINT)
   declare is_completed: number;
+
+  @Default("TEXT")
+  @Column(DataType.ENUM("TEXT", "HTML"))
+  declare task_type: TaskType;
 
   @ForeignKey(() => User)
   @Column(DataType.INTEGER)

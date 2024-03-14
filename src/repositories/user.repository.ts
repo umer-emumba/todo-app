@@ -1,40 +1,25 @@
-import { CreateUserDto, ISocialLogin } from "../interfaces";
-import { User } from "../models";
+import { Sequelize } from "sequelize-typescript";
+import { CreateUserDto, ISocialLogin, UserSettingDto } from "../interfaces";
+import { User, UserSetting } from "../models";
+import sequelize from "../models/connection";
 import {
   ACCOUNT_ALREAD_EXIST_WITH_THIS_EMAIL,
   BadRequestError,
   ENTITY_SHOULD_BE_UBNIQUE,
 } from "../utils";
+import { BaseRepository } from "./base.repository";
 
-class UserRepository {
-  async create(dto: CreateUserDto): Promise<User> {
-    const isEmailUnique = await User.count({
-      where: {
-        email: dto.email,
-      },
-    });
-
-    if (isEmailUnique > 0) {
-      throw new BadRequestError(ENTITY_SHOULD_BE_UBNIQUE("Email"));
-    }
-
-    const user = await User.create({
-      ...dto,
-    });
-    return user;
+class UserRepository extends BaseRepository<User> {
+  constructor(sequelize: Sequelize) {
+    super(sequelize, User);
   }
 
-  async markUserVerified(id: number): Promise<void> {
-    await User.update(
-      {
-        email_verified_at: new Date(),
+  async countByEmail(email: string): Promise<number> {
+    return await User.count({
+      where: {
+        email,
       },
-      {
-        where: {
-          id,
-        },
-      }
-    );
+    });
   }
 
   async findByEmailUnscoped(email: string): Promise<User | null> {
@@ -43,27 +28,6 @@ class UserRepository {
         email: email,
       },
     });
-  }
-
-  async findById(id: number): Promise<User | null> {
-    return User.findOne({
-      where: {
-        id,
-      },
-    });
-  }
-
-  async updateOne(id: number, data: Partial<User>): Promise<[number]> {
-    return await User.update(
-      {
-        ...data,
-      },
-      {
-        where: {
-          id,
-        },
-      }
-    );
   }
 
   async socialLogin(dto: ISocialLogin): Promise<User> {
@@ -96,6 +60,27 @@ class UserRepository {
       return user;
     }
   }
+
+  async getUserSetting(userId: number): Promise<UserSetting | null> {
+    return UserSetting.findOne({
+      where: {
+        user_id: userId,
+      },
+    });
+  }
+
+  async updateUserSetting(userId: number, dto: UserSettingDto): Promise<void> {
+    await UserSetting.update(
+      {
+        ...dto,
+      },
+      {
+        where: {
+          user_id: userId,
+        },
+      }
+    );
+  }
 }
 
-export default new UserRepository();
+export default new UserRepository(sequelize);

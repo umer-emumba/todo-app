@@ -1,6 +1,4 @@
-import { QueryTypes, WhereOptions } from "sequelize";
 import {
-  CreateTaskDto,
   IAverageTaskCompleted,
   IMaxTaskCompletionDate,
   IOverDueTaskCount,
@@ -8,54 +6,25 @@ import {
   ITasksPerDay,
   OrderEnum,
   PaginationDto,
-  UpdateTaskDto,
 } from "../interfaces";
 import { Task, TaskAttachment, User } from "../models";
 import { Op } from "sequelize";
 import { Sequelize } from "sequelize-typescript";
 import sequelize from "../models/connection";
 import dayjs from "dayjs";
+import { BaseRepository } from "./base.repository";
 
-class TaskRepository {
+class TaskRepository extends BaseRepository<Task> {
+  constructor(sequelize: Sequelize) {
+    super(sequelize, Task);
+  }
+
   async countById(userId: number): Promise<number> {
     return Task.count({
       where: {
         user_id: userId,
       },
     });
-  }
-
-  async create(userId: number, dto: CreateTaskDto): Promise<Task> {
-    return await Task.create(
-      {
-        user_id: userId,
-        ...dto,
-      },
-      {
-        include: [
-          {
-            model: TaskAttachment,
-          },
-        ],
-      }
-    );
-  }
-
-  async findById(id: number): Promise<Task | null> {
-    return await Task.findByPk(id);
-  }
-
-  async update(id: number, dto: UpdateTaskDto): Promise<[number]> {
-    return await Task.update(
-      {
-        ...dto,
-      },
-      {
-        where: {
-          id,
-        },
-      }
-    );
   }
 
   async markCompleted(id: number): Promise<[number]> {
@@ -110,14 +79,6 @@ class TaskRepository {
       limit: dto.limit,
       offset: dto.offset,
       order: [["id", dto.order || OrderEnum.DESC]],
-    });
-  }
-
-  async destroy(id: number): Promise<number> {
-    return await Task.destroy({
-      where: {
-        id: id,
-      },
     });
   }
 
@@ -301,4 +262,4 @@ class TaskRepository {
   }
 }
 
-export default new TaskRepository();
+export default new TaskRepository(sequelize);

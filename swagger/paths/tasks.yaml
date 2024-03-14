@@ -8,10 +8,21 @@ post:
     - multipart/form-data
   parameters:
     - in: formData
+      name: task_type
+      type: string
+      enum: [HTML, TEXT]
+      required: true
+    - in: formData
       name: title
       type: string
+      description: required if task_type is TEXT
       maxLength: 100
-      required: true
+      required: false
+    - in: formData
+      name: html
+      type: string
+      description: required if task_type is HTML
+      required: false
     - in: formData
       name: description
       type: string

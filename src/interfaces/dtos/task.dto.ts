@@ -7,14 +7,31 @@ import {
   IsOptional,
   IsString,
   MaxLength,
+  ValidateIf,
   ValidateNested,
 } from "class-validator";
 
+export enum AttachmentType {
+  IMAGE = "IMAGE",
+  VIDEO = "VIDEO",
+  PDF = "PDF",
+  DOC = "DOC",
+}
+
+export enum TaskType {
+  TEXT = "TEXT",
+  HTML = "HTML",
+}
+
 export class CreateTaskDto {
-  @IsNotEmpty()
+  @ValidateIf((object, value) => object.task_type === TaskType.TEXT)
   @IsString()
   @MaxLength(50)
   title!: string;
+
+  @ValidateIf((object, value) => object.task_type === TaskType.HTML)
+  @IsString()
+  html!: string;
 
   @IsNotEmpty()
   @IsString()
@@ -25,30 +42,34 @@ export class CreateTaskDto {
   @Transform(({ value }) => new Date(value))
   due_at!: Date;
 
+  @IsEnum(TaskType)
+  task_type!: TaskType;
+
   @IsOptional()
   @ValidateNested()
   task_attachments?: Attachment[];
 }
 
 export class UpdateTaskDto {
-  @IsNotEmpty()
+  @ValidateIf((object, value) => object.task_type === TaskType.TEXT)
   @IsString()
+  @MaxLength(50)
   title!: string;
+
+  @ValidateIf((object, value) => object.task_type === TaskType.HTML)
+  @IsString()
+  html!: string;
 
   @IsNotEmpty()
   @IsString()
   description!: string;
 
+  @IsEnum(TaskType)
+  task_type!: TaskType;
+
   @IsDate()
   @Transform(({ value }) => new Date(value))
   due_at!: Date;
-}
-
-export enum AttachmentType {
-  IMAGE = "IMAGE",
-  VIDEO = "VIDEO",
-  PDF = "PDF",
-  DOC = "DOC",
 }
 
 export class Attachment {

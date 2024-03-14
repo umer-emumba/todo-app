@@ -7,8 +7,11 @@ import {
   LoginDto,
   PasswordResetDto,
   QueuesEnum,
+  UpdateProfileDto,
+  UserSettingDto,
 } from "../interfaces";
 import { IJwtToken, TokenType, UserType } from "../interfaces/IJwtToken";
+import { UserSetting } from "../models";
 import { userRepository } from "../repositories";
 import {
   ACCONT_NOT_VERIFIED,
@@ -18,6 +21,7 @@ import {
   BadRequestError,
   EMAIL_VERIFICATION_BODY,
   EMAIL_VERIFICATION_TITLE,
+  ENTITY_SHOULD_BE_UBNIQUE,
   FORGOT_PASSWORD_NOT_ALLOWED_FOR_SOCIAL_LOGIN,
   ForbiddenError,
   INVALID_CREDENTIALS,
@@ -66,9 +70,23 @@ class AuthService {
   }
 
   async signup(dto: CreateUserDto): Promise<string> {
+    const isEmailUnique = await userRepository.countByEmail(dto.email);
+    if (isEmailUnique > 0) {
+      throw new BadRequestError(ENTITY_SHOULD_BE_UBNIQUE("Email"));
+    }
+
     dto.password = await hashPassword(dto.password);
 
-    const user = await userRepository.create(dto);
+    const user = await userRepository.create(
+      { ...dto, user_setting: {} },
+      {
+        include: [
+          {
+            model: UserSetting,
+          },
+        ],
+      }
+    );
     const payload: IJwtToken = {
       id: user.id,
       token_type: TokenType.EMAIL_VERIFICATION,
@@ -98,7 +116,10 @@ class AuthService {
       throw new ForbiddenError(INVALID_TOKEN);
     }
 
-    await userRepository.markUserVerified(decoded.id);
+    await userRepository.update(
+      { id: decoded.id },
+      { email_verified_at: new Date() }
+    );
     return ACCOUNT_VERIFIED;
   }
 
@@ -192,7 +213,7 @@ class AuthService {
     }
 
     let password = await hashPassword(dto.password);
-    await userRepository.updateOne(user.id, { password });
+    await userRepository.update({ id: user.id }, { password });
     return UPDATED_SUCCESSFULLY("Password");
   }
 
@@ -209,6 +230,30 @@ class AuthService {
     const user = await userRepository.socialLogin(socialLoginDto);
     const response = this.generateTokenForLogin(user.id);
     return response;
+  }
+
+  async getUserSetting(userId: number): Promise<UserSetting | null> {
+    return userRepository.getUserSetting(userId);
+  }
+
+  async updateUserSetting(
+    userId: number,
+    dto: UserSettingDto
+  ): Promise<string> {
+    await userRepository.updateUserSetting(userId, dto);
+    return UPDATED_SUCCESSFULLY("User Setting");
+  }
+
+  async updateProfile(userId: number, dto: UpdateProfileDto): Promise<string> {
+    await userRepository.update(
+      {
+        id: userId,
+      },
+      {
+        ...dto,
+      }
+    );
+    return UPDATED_SUCCESSFULLY("Profile");
   }
 }
 

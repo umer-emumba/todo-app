@@ -1,4 +1,12 @@
-import { IsEmail, IsNotEmpty, IsString, Min, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsPhoneNumber,
+  IsString,
+  MaxLength,
+  Min,
+  MinLength,
+} from "class-validator";
 
 export class CreateUserDto {
   @IsNotEmpty()
@@ -32,4 +40,12 @@ export class PasswordResetDto {
   @IsNotEmpty()
   @IsString()
   token!: string;
+}
+
+export class UpdateProfileDto {
+  @IsPhoneNumber()
+  @IsNotEmpty()
+  @IsString()
+  @MaxLength(25)
+  phone!: string;
 }

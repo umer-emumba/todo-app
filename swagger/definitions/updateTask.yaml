@@ -2,11 +2,18 @@ type: object
 properties:
   title:
     type: string
+    description: required if task_type is TEXT
+  html:
+    type: string
+    description: required if task_type is TEXT
   description:
     type: string
   due_at:
     type: string
+  task_type:
+    type: string
+    enum: [HTML, TEXT]
 required:
-  - title
   - description
   - due_at
+  - task_type

@@ -1,29 +1,67 @@
 import {
   CreateTaskDto,
+  IGeneratePdfOptions,
+  IMailOptions,
   IPaginatedResponse,
+  JobTypeEnum,
   PaginationDto,
+  QueuesEnum,
+  TaskType,
   UpdateTaskDto,
 } from "../interfaces";
-import { Task } from "../models";
+import { Task, TaskAttachment, User } from "../models";
 import { taskRepository } from "../repositories";
 import {
   BadRequestError,
   CREATED_SUCCESSFULLY,
   DELETED_SUCCESSFULLY,
   NOT_FOUND_ERROR,
+  TASK_ADDED_EMAIL_BODY,
+  TASK_ADDED_EMAIL_TITLE,
   TASK_ALREADY_COMPLETED,
   TASK_LIMIT_EXCEEDED,
   UPDATED_SUCCESSFULLY,
   config,
+  createAndSaveTemplate,
 } from "../utils";
+import QueueService from "./queue.service";
 
 class TaskService {
-  async addTask(userId: number, dto: CreateTaskDto): Promise<string> {
-    const taskCount = await taskRepository.countById(userId);
+  async addTask(user: User, dto: CreateTaskDto): Promise<string> {
+    const taskCount = await taskRepository.countById(user.id);
     if (taskCount >= config.maxTaskCount) {
       throw new BadRequestError(TASK_LIMIT_EXCEEDED);
     }
-    await taskRepository.create(userId, dto);
+
+    let templateUrl: string = "";
+
+    if (dto.task_type === TaskType.HTML) {
+      templateUrl = await createAndSaveTemplate(dto.html);
+    }
+
+    const task = await taskRepository.create(
+      { ...dto, user_id: user.id, template_url: templateUrl },
+      { include: [{ model: TaskAttachment }] }
+    );
+
+    if (task.task_type === TaskType.HTML) {
+      const mailOptions: IMailOptions = {
+        to: user.email,
+        subject: TASK_ADDED_EMAIL_TITLE,
+        html: TASK_ADDED_EMAIL_BODY(task),
+      };
+
+      const generatePdfOptions: IGeneratePdfOptions = {
+        templatePath: `./public${task.template_url}`,
+        outputPath: `./public/pdfs/task-${task.id}.pdf`,
+      };
+
+      const instance = new QueueService();
+      const queue = instance.getQueue(QueuesEnum.DEFAULT);
+      queue.add(JobTypeEnum.SEND_EMAIL, mailOptions);
+      queue.add(JobTypeEnum.GENERATE_PDF, generatePdfOptions);
+    }
+
     return CREATED_SUCCESSFULLY("Task");
   }
 
@@ -39,7 +77,19 @@ class TaskService {
     if (task.user_id !== userId) {
       throw new BadRequestError(NOT_FOUND_ERROR("Task"));
     }
-    await taskRepository.update(taskId, dto);
+
+    let templateUrl: string = "";
+
+    if (dto.task_type === TaskType.HTML) {
+      templateUrl = await createAndSaveTemplate(dto.html);
+    }
+
+    await taskRepository.update(
+      {
+        id: taskId,
+      },
+      { ...dto, template_url: templateUrl }
+    );
     return UPDATED_SUCCESSFULLY("Task");
   }
 
@@ -89,7 +139,7 @@ class TaskService {
     if (task.user_id !== userId) {
       throw new BadRequestError(NOT_FOUND_ERROR("Task"));
     }
-    await taskRepository.destroy(taskId);
+    await taskRepository.delete({ id: taskId });
     return DELETED_SUCCESSFULLY("Task");
   }
 

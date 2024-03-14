@@ -1,9 +1,12 @@
+import { BackoffOptions } from "bullmq";
+
 export enum QueuesEnum {
   DEFAULT = "default",
 }
 
 export enum JobTypeEnum {
   SEND_EMAIL = "send-email",
+  GENERATE_PDF = "generate-pdf",
 }
 
 interface IRedisConnection {
@@ -14,6 +17,8 @@ interface IRedisConnection {
 interface IDefaultOptions {
   removeOnComplete: boolean;
   removeOnFail: boolean;
+  attempts: number;
+  backoff: number | BackoffOptions;
 }
 
 export interface IBullMqOptions {

@@ -4,12 +4,17 @@ properties:
     type: integer
   title:
     type: string
+  template_url:
+    type: string
   description:
     type: string
   due_at:
     type: string
   is_completed:
     type: integer
+  task_type:
+    type: string
+    enum: [HTML, TEXT]
   user_id:
     type: integer
   completed_at:

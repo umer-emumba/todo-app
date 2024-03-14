@@ -1,5 +1,11 @@
 import { Request, Response } from "express";
-import { CreateUserDto, LoginDto, PasswordResetDto } from "../interfaces";
+import {
+  CreateUserDto,
+  LoginDto,
+  PasswordResetDto,
+  UpdateProfileDto,
+  UserSettingDto,
+} from "../interfaces";
 import { authService } from "../services";
 import { createAndValidateDto, sendSuccessResponse } from "../utils";
 import { ILoginResponse } from "../interfaces/ILoginResponse";
@@ -51,6 +57,37 @@ class AuthController {
     const { idToken } = req.body;
     const data: ILoginResponse = await authService.socialLogin(idToken);
     return sendSuccessResponse(res, 200, data);
+  }
+
+  async getUserSetting(req: Request, res: Response): Promise<void> {
+    const user = req.user;
+    const setting = await authService.getUserSetting(user.id);
+    return sendSuccessResponse(res, 200, setting);
+  }
+
+  async updateUserSetting(req: Request, res: Response): Promise<void> {
+    const dto: UserSettingDto = await createAndValidateDto(
+      UserSettingDto,
+      req.body
+    );
+    const user = req.user;
+    const message = await authService.updateUserSetting(user.id, dto);
+    return sendSuccessResponse(res, 200, { message });
+  }
+
+  async getProfile(req: Request, res: Response): Promise<void> {
+    const user = req.user;
+    return sendSuccessResponse(res, 200, user);
+  }
+
+  async updateProfile(req: Request, res: Response): Promise<void> {
+    const dto: UpdateProfileDto = await createAndValidateDto(
+      UpdateProfileDto,
+      req.body
+    );
+    const user = req.user;
+    const message = await authService.updateProfile(user.id, dto);
+    return sendSuccessResponse(res, 200, { message });
   }
 }
 
