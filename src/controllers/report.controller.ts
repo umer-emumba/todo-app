@@ -35,6 +35,12 @@ class ReportController {
     const data = await reportService.getTasksCreationByDayCount(user.id);
     return sendSuccessResponse(res, 200, data);
   }
+
+  async getEmailSMSReport(req: Request, res: Response): Promise<void> {
+    const user = req.user;
+    const data = await reportService.getEmailSMSReport(user.id);
+    return sendSuccessResponse(res, 200, data);
+  }
 }
 
 export default new ReportController();

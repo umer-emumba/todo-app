@@ -12,3 +12,5 @@ export * from "./IBullMqOptions";
 export * from "./dtos/base.dto";
 export * from "./IGeneratePdfOptions";
 export * from "./dtos/user-setting.dto";
+export * from "./ISMSOptions";
+export * from "./notification-type.enum";

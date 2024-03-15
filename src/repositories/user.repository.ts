@@ -1,6 +1,6 @@
 import { Sequelize } from "sequelize-typescript";
 import { CreateUserDto, ISocialLogin, UserSettingDto } from "../interfaces";
-import { User, UserSetting } from "../models";
+import { Task, User, UserSetting } from "../models";
 import sequelize from "../models/connection";
 import {
   ACCOUNT_ALREAD_EXIST_WITH_THIS_EMAIL,
@@ -8,6 +8,7 @@ import {
   ENTITY_SHOULD_BE_UBNIQUE,
 } from "../utils";
 import { BaseRepository } from "./base.repository";
+import { Op } from "sequelize";
 
 class UserRepository extends BaseRepository<User> {
   constructor(sequelize: Sequelize) {
@@ -80,6 +81,32 @@ class UserRepository extends BaseRepository<User> {
         },
       }
     );
+  }
+
+  async getUsersWithTasksForNotifications(
+    limit: number,
+    offset: number
+  ): Promise<User[]> {
+    return await User.findAll({
+      where: {
+        phone: {
+          [Op.ne]: null,
+        },
+        email_verified_at: {
+          [Op.ne]: null,
+        },
+      },
+      include: [
+        {
+          model: UserSetting,
+        },
+        {
+          model: Task,
+        },
+      ],
+      limit,
+      offset,
+    });
   }
 }
 

@@ -21,3 +21,8 @@ export interface ITasksPerDay {
   dayOfWeek: string;
   taskCount: number;
 }
+
+export interface IEmailSMSReport {
+  emailSent: number;
+  smsSent: number;
+}

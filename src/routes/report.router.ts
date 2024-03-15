@@ -21,5 +21,6 @@ router.get(
   jwtAuth,
   reportController.getTasksCreationByDayCount
 );
+router.get("/email_sms_sent", jwtAuth, reportController.getEmailSMSReport);
 
 export default router;

@@ -58,7 +58,7 @@ class TaskService {
 
       const instance = new QueueService();
       const queue = instance.getQueue(QueuesEnum.DEFAULT);
-      queue.add(JobTypeEnum.SEND_EMAIL, mailOptions);
+      queue.add(JobTypeEnum.SEND_EMAIL, { ...mailOptions, userId: user.id });
       queue.add(JobTypeEnum.GENERATE_PDF, generatePdfOptions);
     }
 
