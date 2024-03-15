@@ -219,12 +219,12 @@ export const convertHtmlToPdf = async (options: IGeneratePdfOptions) => {
 };
 
 export const sendSMS = async (options: ISMSOptions) => {
-  const client = twilio(config.twillio.sid, config.twillio.token);
-  return await client.messages.create({
-    body: options.body,
-    from: config.twillio.from,
-    to: options.to,
-  });
+  // const client = twilio(config.twillio.sid, config.twillio.token);
+  // return await client.messages.create({
+  //   body: options.body,
+  //   from: config.twillio.from,
+  //   to: options.to,
+  // });
 };
 
 export const createShortUrl = async (url: string): Promise<string> => {

@@ -32,7 +32,10 @@ class CronService {
             subject: REMINDER_EMAIL_TITLE,
             html: REMINDER_EMAIL_BODY(task.title),
           };
-          queue.add(JobTypeEnum.SEND_EMAIL, mailOptions);
+          queue.add(JobTypeEnum.SEND_EMAIL, {
+            ...mailOptions,
+            userId: task.user.id,
+          });
         });
       } catch (error) {
         logger.error(error);
@@ -81,7 +84,10 @@ class CronService {
                 TaskType.TEXT,
                 pendingTextTasks
               );
-              queue.add(JobTypeEnum.SEND_SMS, smsOptions);
+              queue.add(JobTypeEnum.SEND_SMS, {
+                ...smsOptions,
+                userId: user.id,
+              });
             }
             if (completedTextTasks.length > 0) {
               const smsOptions = await this.prepareTaskSMS(
@@ -90,7 +96,10 @@ class CronService {
                 TaskType.TEXT,
                 completedTextTasks
               );
-              queue.add(JobTypeEnum.SEND_SMS, smsOptions);
+              queue.add(JobTypeEnum.SEND_SMS, {
+                ...smsOptions,
+                userId: user.id,
+              });
             }
             if (pendingHtmlTasks.length > 0) {
               const smsOptions = await this.prepareTaskSMS(
@@ -99,7 +108,10 @@ class CronService {
                 TaskType.HTML,
                 pendingHtmlTasks
               );
-              queue.add(JobTypeEnum.SEND_SMS, smsOptions);
+              queue.add(JobTypeEnum.SEND_SMS, {
+                ...smsOptions,
+                userId: user.id,
+              });
             }
             if (completedHtmlTasks.length > 0) {
               const smsOptions = await this.prepareTaskSMS(
@@ -108,7 +120,10 @@ class CronService {
                 TaskType.HTML,
                 completedHtmlTasks
               );
-              queue.add(JobTypeEnum.SEND_SMS, smsOptions);
+              queue.add(JobTypeEnum.SEND_SMS, {
+                ...smsOptions,
+                userId: user.id,
+              });
             }
           }
 

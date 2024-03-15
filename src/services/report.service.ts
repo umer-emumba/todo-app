@@ -1,11 +1,12 @@
 import {
   IAverageTaskCompleted,
+  IEmailSMSReport,
   IMaxTaskCompletionDate,
   IOverDueTaskCount,
   ITaskCount,
   ITasksPerDay,
 } from "../interfaces";
-import { taskRepository } from "../repositories";
+import { taskRepository, userNotificationRepository } from "../repositories";
 
 class ReportService {
   async getTasksCount(userId: number): Promise<ITaskCount> {
@@ -30,6 +31,10 @@ class ReportService {
 
   async getTasksCreationByDayCount(userId: number): Promise<ITasksPerDay[]> {
     return taskRepository.getTasksCreationByDayCount(userId);
+  }
+
+  async getEmailSMSReport(userId: number): Promise<IEmailSMSReport> {
+    return userNotificationRepository.getEmailSMSCount(userId);
   }
 }
 

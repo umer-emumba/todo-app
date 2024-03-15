@@ -102,7 +102,7 @@ class AuthService {
 
     const instance = new QueueService();
     const queue = instance.getQueue(QueuesEnum.DEFAULT);
-    queue.add(JobTypeEnum.SEND_EMAIL, mailOptions);
+    queue.add(JobTypeEnum.SEND_EMAIL, { ...mailOptions, userId: user.id });
 
     return ACCOUNT_CREATED;
   }
@@ -194,7 +194,11 @@ class AuthService {
       subject: PASSWORD_FORGOT_EMAIL_TITLE,
       html: PASSWORD_FORGOT_EMAIL_BODY(token),
     };
-    await sendMail(mailOptions);
+
+    const instance = new QueueService();
+    const queue = instance.getQueue(QueuesEnum.DEFAULT);
+    queue.add(JobTypeEnum.SEND_EMAIL, { ...mailOptions, userId: user.id });
+
     return PASSWORD_RESET_EMAIL_SENT;
   }
 
